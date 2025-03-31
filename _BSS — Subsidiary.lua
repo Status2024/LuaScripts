@@ -732,7 +732,8 @@ local function clickEvent(button)
 	local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 	local position = Vector3.new(humanoidRootPart.Position.x,humanoidRootPart.Position.y,
 		humanoidRootPart.Position.z)
-	local x,y,zrepeat
+	local x,y,z
+	repeat
 		x = position.x + math.random(-delta, delta)
 		y = humanoidRootPart.Position.y
 		z = position.z + math.random(-delta, delta)
