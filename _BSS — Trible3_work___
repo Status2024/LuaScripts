@@ -1976,7 +1976,7 @@ spawn(function()------------------actions_Frame----------------
 	buttonTPMenuLoad.MouseButton1Down:Connect(function()
 		ButtonState.Off(buttonTPMenuLoad)
 		loadstring(game:HttpGet(('https://raw.githubusercontent.com/Status2024/LuaScripts/refs/heads/main/_BSS%20%E2%80%94%20Subsidiary.lua'),true))()
-		wait(5)
+		wait(3)
 		ButtonState.Activation(buttonTPMenuLoad)
 	end)
 
