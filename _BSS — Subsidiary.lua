@@ -401,7 +401,7 @@ ticketRoyalJellyButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame
 
 end)
 
-spawn(function()-----tp_2Frame-----
+spawn(function()-----tp_2Frame(DISP)-----
 
 ButtonState.Forms(ButtonSet,1,1,1)
 local honeyStormButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
@@ -447,7 +447,7 @@ clubHoneyButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Wayp
 
 end)
 
-spawn(function()-----tp_3Frame-----
+spawn(function()-----tp_3Frame(Drive)-----
 
 ButtonState.Forms(ButtonSet,1,1,1)
 local starRoomButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
@@ -479,7 +479,10 @@ local demonmMaskButton = createButton({Size=ButtonState.Size(ButtonSet),Position
 ButtonState.Forms(ButtonSet,10,1,1)
 local diamondMaskButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 	Text="Diamond Mask",Name="diamondMaskButton",Parent=tp_3Frame,TextColor3=GuiColor.Text_Blue_})
-
+ButtonState.Forms(ButtonSet,11,1,1)
+local printerButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+	Text="Printer",Name="printerButton",Parent=tp_3Frame})
+	
 starRoomButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Star Room"] end)
 wealthClockButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Wealth Clock"] end)
 blenderButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Blender"] end)
@@ -490,6 +493,7 @@ topTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoint
 gummyMaskButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Gummy Mask"] end)
 diamondMaskButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Diamond Mask"] end)
 demonmMaskButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Demonm Mask"] end)
+printerButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Sticker Printer"] end)
 
 end)
 
@@ -636,6 +640,7 @@ Waypoints = {-----Waypoints-----
 ["Diamond Mask"] = CFrame.new(-336,133,-387),
 ["Gummy Mask"] = CFrame.new(272,25268,-773),
 ["Demonm Mask"] = CFrame.new(291,28,271),
+["Sticker Printer"] = CFrame.new(200,162.3,-200),
 
 ["Night Match"] = CFrame.new(-17.2, 312.7, -270.1),
 ["Extreme Match"] = CFrame.new(-405,112,545),
