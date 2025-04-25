@@ -3,7 +3,7 @@
 --mrsh wnd vcs
 
 local timeAfte_ = .1
-local timtDiging_ = .3--.3
+local timtDiging_ = 1--.3
 local timtSpeeding_ = .3--.3
 local GuiColor = {--(0.184314,0.105882,0.4431373)V3
 	Base_	= Color3.new(0.331765,0.158823,0.662060),
@@ -773,6 +773,9 @@ local WRP = {---+++
 	end,
 	
 	stQuest = function()--coroutine.wrap(WRP.remoteQuest)()
+		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip", {
+			["Mute"] = true,["Type"] = "Sticker-Seeker",["Category"] = "Collector"})
+		wait(1)
 		game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Sticker-Seeker")
 		wait(.5)
 		game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Sticker-Seeker")
@@ -785,13 +788,9 @@ local WRP = {---+++
 			wait(timtSpeeding_)
 		end
 	end,
-
-	--humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
-	--humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-	--spawnPosHumanoid = game.Players.LocalPlayer.SpawnPos.Value
-
+	
 	autoDiging = function()--coroutine.wrap(WRP.autoDiging)()
-		local function detectTool()
+		--[[local function detectTool()
 			for _,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
 				if v:IsA("Tool") then
 					return v
@@ -800,9 +799,10 @@ local WRP = {---+++
 			return false
 		end
 
-		local tool = detectTool()
-		while AutoFlags.DigBottonDown and tool do  
-			tool.ClickEvent:FireServer()
+		local tool = detectTool()]]
+		while AutoFlags.DigBottonDown do--and tool do  
+			game:GetService("ReplicatedStorage").Events.ToolCollect:FireServer()
+			--tool.ClickEvent:FireServer()
 			wait(timtDiging_)
 		end
 	end}
@@ -991,7 +991,7 @@ local Auto = {
 		coroutine.wrap(WRP.applySpeed)()
 	end,
 
-	--[[digRebut = function(bool)
+	digRebut = function(bool)
 		repeat
 			if AutoFlags.DigBottonDown then
 				AutoFlags.DigBottonDown = false
@@ -1002,7 +1002,7 @@ local Auto = {
 			end
 			if bool then wait(600) else return end
 		until not HumanoidAction.AllStarting
-	end,]]
+	end,
 
 	humanoidReboot = function()
 		while HumanoidAction.AllStarting do
@@ -1013,7 +1013,7 @@ local Auto = {
 	end}
 coroutine.wrap(Auto.trackingFunction)()
 coroutine.wrap(Auto.humanoidReboot)()
---coroutine.wrap(Auto.digRebut)(true)
+coroutine.wrap(Auto.digRebut)(true)
 
 local function imKilled(timeDelay)
 	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
@@ -1947,7 +1947,6 @@ spawn(function()------------------actions_Frame----------------
 	ButtonState.Forms(ButtonSet,4,2,2)
 	local buttonCDestroy = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="CDestroy",Name="buttonCDestroy",Parent=actions_Frame})
-
 	ButtonState.Forms(ButtonSet,5,2,3)
 	local buttonSkan = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="Skan",Name="buttonSkan",Parent=actions_Frame})
@@ -1955,10 +1954,13 @@ spawn(function()------------------actions_Frame----------------
 	ButtonState.Forms(ButtonSet,1,3,1)
 	local buttonQuest = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="Quest",Name="buttonQuest",Parent=actions_Frame})
-
 	ButtonState.Forms(ButtonSet,2,3,1)
 	local buttonStQuest = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="StQuest",Name="buttonStQuest",Parent=actions_Frame})
+
+	ButtonState.Forms(ButtonSet,3,3,2)
+	local buttonPetalWand = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Petal Wand",Name="buttonPetalWand",Parent=actions_Frame})
 
 	buttonTestXYZ.MouseButton1Down:Connect(function()
 		xyz = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart.CFrame
@@ -1991,7 +1993,6 @@ spawn(function()------------------actions_Frame----------------
 			local first = table.remove(ActionFlags.Stickers, 1)
 			pcall(function()
 				humanoidRootPart.CFrame = first.CFrame
-				first.Visible = true
 			end)
 			buttonStickers.Text = tostring(#ActionFlags.Stickers )
 			wait()
@@ -2000,10 +2001,6 @@ spawn(function()------------------actions_Frame----------------
 			buttonStickers.Text = "Stickers"
 			ButtonState.Activation(buttonStickers)
 		end
-		--[[
-		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Tool",
-		{["Mute"] = true, ["Type"] = "Sticker-Seeker", ["Category"] = "Accessory"})
-		]]
 	end)
 
 	buttonFieldDeccosDel.MouseButton1Down:Connect(function()
@@ -2042,7 +2039,11 @@ end)
 		ButtonState.Activation(buttonStQuest)
 	end)
 
-
+	buttonPetalWand.MouseButton1Down:Connect(function()
+		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip", {
+			["Mute"] = true,["Type"] = "Petal Wand",["Category"] = "Collector"})
+	end)
+	
 	-- перебор компонентов Collectibles
 	--[[local function testAutoDiging()
 		local function detectTool()
@@ -2124,9 +2125,6 @@ end)
 end)
 
 spawn(function()------------------settings_Frame---------------
-	--[[ButtonState.Forms(ButtonSet,2,1,1)
-	local buttonAutoDig = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-		Text="Auto Dig",Name="buttonAutoDig",Parent=settings_Frame})]]
 	ButtonState.Forms(ButtonSet,2,1,1)
 	local buttonAutoBoost = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="ABoost",Name="buttonAutoBoost",Parent=settings_Frame,TextSize = 10})
@@ -2137,9 +2135,12 @@ spawn(function()------------------settings_Frame---------------
 	local buttonBalloon = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="Balloon",Name="buttonBalloon",Parent=settings_Frame})
 	ButtonState.Forms(ButtonSet,5,1,1)
+	local buttonAutoDig = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Auto Dig",Name="buttonAutoDig",Parent=settings_Frame})
+	ButtonState.Forms(ButtonSet,6,1,1)
 	local buttonAutoChristmas = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="Auto Christmas",Name="buttonAutoChristmas",Parent=settings_Frame,TextSize = 10,Visible = true})
-	ButtonState.Forms(ButtonSet,6,1,1)
+	ButtonState.Forms(ButtonSet,7,1,1)
 	local buttonDistance = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="Dist to board: ",Name="buttonDistance",Parent=settings_Frame,TextSize = 10})
 
@@ -2183,7 +2184,7 @@ spawn(function()------------------settings_Frame---------------
 		Text="Demon Mask",Name="buttonDemonMaskEquip",Parent=settings_Frame,TextSize = 10,--TextColor3=GuiColor.Text_Red_,
 		BackgroundColor3=GuiColor.Red_})
 
-	--[[buttonAutoDig.MouseButton1Down:Connect(function()--
+	buttonAutoDig.MouseButton1Down:Connect(function()--
 		if AutoFlags.DigBottonDown == false then
 			AutoFlags.DigBottonDown = true
 			ButtonState.On(buttonAutoDig)
@@ -2192,7 +2193,7 @@ spawn(function()------------------settings_Frame---------------
 			AutoFlags.DigBottonDown = false
 			ButtonState.Activation(buttonAutoDig)
 		end
-	end)]]
+	end)
 
 	buttonAutoBoost.MouseButton1Down:Connect(function()--
 		local function usingBoost()
@@ -2644,11 +2645,11 @@ spawn(function()------------------settings_Frame---------------
 	end)
 
 	buttonAutoChristmas.MouseButton1Down:Connect(function()--
-		local function collectDist20()
+		local function collectDist25()
 			local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 			for k,v in pairs(workspace.Collectibles:GetChildren()) do			-- перебираем собираемые элементы
 				if tostring(v) == tostring(game.Players.LocalPlayer.Name) or tostring(v) == "C" then
-					if (v.Position - humanoidRootPart.Position).magnitude <= 20 then	-- если растояние меньше, собираем
+					if (v.Position - humanoidRootPart.Position).magnitude <= 25 then	-- если растояние меньше, собираем
 																						-- токен находится на уровне
 						if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
 							if buttonAutoChristmas.Active then
@@ -2665,7 +2666,7 @@ spawn(function()------------------settings_Frame---------------
 
 		local function collecting(delay,count)
 			wait(delay)
-			for count = 1, count do	collectDist20() end
+			for count = 1, count do	collectDist25() end
 		end
 
 		local function step(delay,cFrame)
@@ -2684,21 +2685,21 @@ spawn(function()------------------settings_Frame---------------
 					wait(10)
 				end
 				HumanoidAction.Pause = true
-				
+				local toyEvent = game:GetService("ReplicatedStorage").Events.ToyEvent
 				--game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Gingerbread House")
 				if not step(7,CFrame.new(-403.2, 48, 280.2)) then break end					--"Wax"
-				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Honeyday Candles")
+				toyEvent:FireServer("Honeyday Candles")
 				if not step(3,CFrame.new(233, 35.61, 239)) then break end					--"Stockings"
-				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Stockings")
+				toyEvent:FireServer("Stockings")
 				collecting(5,2)
 				if not step(7,CFrame.new(421, 132, -333)) then break end					--"Samovar"
-				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Samovar")
+				toyEvent:FireServer("Samovar")
 				collecting(9,11)
 				if not step(3,CFrame.new(36, 236, -512)) then break end						--"Onett's Lid Art"
-				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Onett's Lid Art")
+				toyEvent:FireServer("Onett's Lid Art")
 				collecting(7,3)
 				if not step(3,CFrame.new(-105, 129, -114)) then break end					--"Beesmas Feast"
-				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Beesmas Feast")
+				toyEvent:FireServer("Beesmas Feast")
 				collecting(5,3)
 				
 				if HumanoidAction.Farm == true then
@@ -2758,5 +2759,9 @@ Waypoints = {
 	--	textView.Text = "Stump Field"
 	--textView.Text = "Pepper Patch"
 	--setBordersField(BordersField.distanceToBoard)
+
+	
+	
+	
 	
 	--loadstring(game:HttpGet(('https://raw.githubusercontent.com/Status2024/LuaScripts/refs/heads/main/_BSS%20%E2%80%94%20Subsidiary.lua'),true))()
