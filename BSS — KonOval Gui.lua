@@ -1,300 +1,545 @@
-local GuiColor = {
-	Base_	= Color3.new(0.184314,0.105882,0.4431373),
-	Red_	= Color3.new(1,0.8,0.8),
-	Green_	= Color3.new(0.8,1,0.8),
-	Blue_	= Color3.new(0.8,0.8,1),
+--BSS — Trible3_work___
+--frm mnd mrsh crsms wnd vcs mbs ld tkt
+--mrsh wnd vcs spdReb digReb humReb
+--  Перебрали trackingFunction, Rebut
+--	Добавили TrackingBottonDown, ConvertMaskBottonDown
+local timeAfte_ = .1
+local timtDiging_ = 1--.3
+local timtSpeeding_ = .3--.3
+local GuiColor = {--(0.184314,0.105882,0.4431373)V3
+	Base_	= Color3.new(0.331765,0.158823,0.662060),
+	Red_	= Color3.new(1,0.6,0.6),
+	Green_	= Color3.new(0.6,1,0.6),
+	Blue_	= Color3.new(0.6,0.6,1),
 	
-	Text_LWhite_= Color3.new(0.7,0.7,0.7),
-	Text_LBlack_= Color3.new(0.3,0.3,0.3),
+	Color_LWhite_= Color3.new(0.7,0.7,0.7),
+	Color_LBlack_= Color3.new(0.3,0.3,0.3),
 	Text_White_	= Color3.new(1,1,1),
 	Text_Black_	= Color3.new(0,0,0),
-	Text_Red_	= Color3.new(1,0.7,0.7),
-	Text_Green_	= Color3.new(0.7,1,0.7),
-	Text_Blue_	= Color3.new(0.7,0.7,1),
+	Text_Red_	= Color3.new(1,0.5,0.5),
+	Text_Green_	= Color3.new(0.5,1,0.5),
+	Text_Blue_	= Color3.new(0.5,0.5,1),
 	
+	On_Color_R	= Color3.new(1, 0, 0),
 	On_Color_G	= Color3.new(0, 1, 0),
 	On_Color_B	= Color3.new(0, 1, 1),
 	On_Color_Y	= Color3.new(1, 1, 0)}
 
-local CreateObject = {
+local CreateObject = {}; do
 	CreateInstance = function(class,properties)
 		local instance_ = Instance.new(class)
 		for i,v in pairs(properties) do
 			instance_[i] = v
 		end
 		return instance_
-	end,
+	end
 	
 	CreateCorner = function(object,r)
 		local Corner = Instance.new("UICorner")
 		Corner.CornerRadius = UDim.new(0, r)
 		Corner.Parent = object
 		return object
-	end}
-
-local function createButton(properties)
-	local button_ = CreateObject.CreateInstance("TextButton",{BackgroundColor3=GuiColor.Base_,BackgroundTransparency=0.4,BorderSizePixel=3,
-		AutoButtonColor=true,TextColor3=GuiColor.Text_White_,Font=Enum.Font.GothamBold,TextSize=12,TextTransparency=0,TextWrapped=false})
-	for i,v in pairs(properties) do
-		button_[i] = v
 	end
-	CreateObject.CreateCorner(button_,2)
-	return button_
+
+	CreateButton = function(properties)
+		local button_ = CreateInstance("TextButton",{BackgroundColor3=GuiColor.Base_,BackgroundTransparency=0.4,BorderSizePixel=3,
+			AutoButtonColor=true,TextColor3=GuiColor.Text_White_,Font=Enum.Font.GothamBold,TextSize=12,TextTransparency=0,TextWrapped=false})
+		for i,v in pairs(properties) do
+			button_[i] = v
+		end
+		CreateCorner(button_,2)
+		return button_
+	end
 end
 
-local ButtonState = {
-
-	Forms = function(button,row,column,segment)
+local ButtonState = {}; do
+	ButtonState.Forms = function(button,row,column,segment)
 		button.Row = row
 		button.Column = column
 		button.Segment = segment
-	end,
+	end
 	
-	Position = function(buTTon)
+	ButtonState.Position = function(buTTon)
 		local X = buTTon.Column * buTTon.GapX + (buTTon.Column - 1) * buTTon.SizeX
 		local Y = (buTTon.Row + buTTon.Segment - 1) * buTTon.GapY + (buTTon.Row - 1) * buTTon.SizeY
 		return UDim2.new(0, X, 0, Y)
-	end,
+	end
 
-	Size = function(buTTon)
+	ButtonState.Size = function(buTTon)
 		return UDim2.new(0, buTTon.SizeX, 0, buTTon.SizeY)
-	end,
+	end
 
-	On = function(button)
+	ButtonState.On = function(button)
 		button.BackgroundColor3 = GuiColor.On_Color_G
 		print(button.Name, "on")
-	end,
+	end
 
-	Off = function(button)
+	ButtonState.Off = function(button)
 		button.AutoButtonColor = false
-		button.BackgroundColor3 = GuiColor.Text_LBlack_
+		button.Active = false
+		button.BackgroundColor3 = GuiColor.Color_LBlack_
 		print(button.Name, "off")
-	end,
+	end
 
-	OnOff = function(button)
+	ButtonState.OnOff = function(button)
 		if	button.BackgroundColor3 == GuiColor.Base_ then
-			button.BackgroundColor3 = GuiColor.On_Color_G
-			print(button.Name, "on")--On(button)
+			ButtonState.On(button)
 			return true
 		else
-			button.AutoButtonColor = false
-			button.BackgroundColor3 = GuiColor.Text_LBlack_
-			print(button.Name, "off")--Off(button)
+			ButtonState.Off(button)
 			return false
 		end
-	end,
+	end
 
-	Activation = function (button)
+	ButtonState.Activation = function (button)
 		button.AutoButtonColor = true
+		button.Active = true
 		button.BackgroundColor3 = GuiColor.Base_
 		print(button.Name, "actived")
-	end,
+	end
 
-	LaunchPeriod = function (button, second)
+	ButtonState.LaunchPeriod = function (button, second)
 		for i = 1, math.floor(second) do
-			if	not button.AutoButtonColor then
+			if	not button.Active then
 				return false
 			end
 			wait(1)
 		end
 		return true
-	end}
-
-local KonOvalGUI = CreateObject.CreateInstance("ScreenGui",{DisplayOrder=0,Enabled=true,ResetOnSpawn=true,
-	Name="[KonOvalGUI]MainGUI"})
-
-local Dark_Frame = CreateObject.CreateInstance("Frame",{Active=false, Selectable=false, Draggable=false,
-	BackgroundColor3=GuiColor.Text_Black_,Transparency=1,BorderSizePixel=0,
-	Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 0, 0, -36),Name="Dark_Frame",Parent=KonOvalGUI})
-
-local Start_Frame = CreateObject.CreateInstance("Frame",{Active=true, Selectable=true, Draggable=true,
-	BackgroundColor3=GuiColor.Text_Black_,Transparency=1,BorderSizePixel=0,
-	Size=UDim2.new(0, 230, 0, 65),Position=UDim2.new(0.01, 0, 0.18, 0),Name="Start_Frame",Parent=KonOvalGUI})	
-local Main_Frame = CreateObject.CreateInstance("Frame",{Active=true, Selectable=true,
-	BackgroundColor3=GuiColor.Base_,Transparency=0.8,BorderSizePixel=0,
-	Size=UDim2.new(0, 220, 0, 55),Position=UDim2.new(0, 5, 0, 5),Name="Main_Frame",Parent=Start_Frame})
-local Menu_Frame = CreateObject.CreateInstance("Frame",{Active=true, Selectable=true,
-	BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
-	Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 5, 0, 65),Name="Menu_Frame",Parent=Start_Frame})
-local Field_Frame = CreateObject.CreateInstance("Frame",{Active=true, Selectable=true,
-	BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
-	Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 80, 0, 0),Name="Field_Frame",Parent=Menu_Frame})	
-local Actions_Frame = CreateObject.CreateInstance("Frame",{Active=true, Selectable=true,
-	BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
-	Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 80, 0, 0),Name="Actions_Frame",Parent=Menu_Frame})	
-local Settings_Frame = CreateObject.CreateInstance("Frame",{Active=true, Selectable=true,
-	BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
-	Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 80, 0, 0),Name="Settings_Frame",Parent=Menu_Frame})
-
-------------------Main_Frame------------------
-local TPTopButton = createButton({Size=UDim2.new(0, 15, 0, 10),Position=UDim2.new(0, 1, 0, 1),
-	Text=" ",Name="TPTopButton",Parent=Main_Frame})
-local TPPepButton = createButton({Size=UDim2.new(0, 15, 0, 10),Position=UDim2.new(0, 1, 0, 15),
-	Text=" ",Name="TPPepButton",Parent=Main_Frame})
-local ViciousTPBotton = createButton({Size=UDim2.new(0, 25, 0, 10),Position=UDim2.new(0, 160, 0, 1),
-	Text="Vicious",Name="ViciousTPBotton",Parent=Main_Frame,TextSize = 4,Transparency = 1})
-local WindyTPBotton = createButton({Size=UDim2.new(0, 25, 0, 10),Position=UDim2.new(0, 160, 0, 15),
-	Text="Windy",Name="WindyTPBotton",Parent=Main_Frame,TextSize = 4,Transparency = 1})
-local MushroomPoint = createButton({Size=UDim2.new(0, 25, 0, 20),Position=UDim2.new(0, 160, 0, 30),
-	Text="0",Name="MushroomPoint",Parent=Main_Frame,TextSize = 16,Transparency = 1})
-local TextView = CreateObject.CreateInstance("TextLabel",{Size=UDim2.new(0, 140, 0, 20),Position=UDim2.new(0, 20, 0, 5),
-	BackgroundColor3=GuiColor.Base_,BackgroundTransparency=1,BorderSizePixel=0,TextTransparency=0,
-	TextColor3=GuiColor.Text_White_,Font=Enum.Font.GothamBold,TextSize=14,TextWrapped=false,
-	Text = "Stump Field",Name="TextView",Parent=Main_Frame})
-local MenuBotton = createButton({Size=UDim2.new(0, 30, 0, 20),Position=UDim2.new(0, 5, 0, 30),
-	Text=">>",Name="MenuBotton",Parent=Main_Frame,TextSize = 14})
-
-local ButtonSet = {Row=1;Column=1;Segment=1;GapX=4;GapY=4;SizeX=90;SizeY=16}
-ButtonState.Forms(ButtonSet,1,3,1)
-local AutoMushrooms = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="AMush",Name="AutoMushrooms",Parent=Settings_Frame,TextSize = 10})
-ButtonState.Forms(ButtonSet,4,2,1)
-local AutoVicious = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="AVicious",Name="AutoVicious",Parent=Settings_Frame,TextSize = 10})
-ButtonState.Forms(ButtonSet,5,2,1)
-local AutoWindy = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="AWindy",Name="AutoWindy",Parent=Settings_Frame,TextSize = 10})
-ButtonState.Forms(ButtonSet,6,2,1)
-local AutoStickBug = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="AStickBug",Name="AutoStickBug",Parent=Settings_Frame,TextSize = 10})
-
-KonOvalGUI.Parent = game.CoreGui
-
-spawn(function()
-	fieldPosition = workspace.FlowerZones[TextView.Text].Position
-	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
-	humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-	spawnPosHumanoid = game.Players.LocalPlayer.SpawnPos.Value
-	fieldCFrame = CFrame.new(workspace.FlowerZones[TextView.Text].Position)
-	game.Players.LocalPlayer.CameraMaxZoomDistance = 777
-	workspace.Gravity = 170
-
-	SizeField = {distanceToBoard=5,min_X=0,max_X=0,min_Z=0,max_Z=0}
-function setMaxMinSizeField(distance)
-	local sizeField = workspace.FlowerZones[TextView.Text].Size
-	SizeField.min_X = fieldPosition.x - (sizeField.x / 2) + distance
-	SizeField.max_X = fieldPosition.x + (sizeField.x / 2) - distance
-	SizeField.min_Z = fieldPosition.z - (sizeField.z / 2) + distance
-	SizeField.max_Z = fieldPosition.z + (sizeField.z / 2) - distance
-	wait(.5)
+	end
 end
-	setMaxMinSizeField(SizeField.distanceToBoard)
-end)
 
-local ConnectionKey = {ConnectionT,ConnectionV,ConnectionRXC,VirtualUserActive}
-local HumanoidState = {Speed=0,TmpSpeed=0,MaskEquipped=0}
+local ButtonSet = {Row=1;Column=1;Segment=1;GapX=4;GapY=4;SizeX=90;SizeY=20}
+local FieldButtonSet = {Row=1;Column=1;Segment=1;GapX=4;GapY=4;SizeX=110;SizeY=20}
+local MenuSet = {Row=1;Column=1;Segment=1;GapX=5;GapY=5;SizeX=70;SizeY=24}
+
+createGui = function()-----createGui-----
+	local xxxl_GUI = CreateInstance("ScreenGui",{DisplayOrder=0,Enabled=true,ResetOnSpawn=true,
+		Name="[xxxl_GUI]MainGUI"})
+
+	local dark_Frame = CreateInstance("Frame",{Active=false, Selectable=false, Draggable=false,
+		BackgroundColor3=GuiColor.Text_Black_,Transparency=1,BorderSizePixel=0,
+		Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 0, 0, -60),Name="dark_Frame",Parent=xxxl_GUI})
+
+	local start_Frame = CreateInstance("Frame",{Active=true, Selectable=true, Draggable=true,
+		BackgroundColor3=GuiColor.Text_Black_,Transparency=1,BorderSizePixel=0,
+		Size=UDim2.new(0, 230, 0, 70),Position=UDim2.new(0.01, 0, 0.18, 0),Name="start_Frame",Parent=xxxl_GUI})	
+	local main_Frame = CreateInstance("Frame",{Active=true, Selectable=true,
+		BackgroundColor3=GuiColor.Base_,Transparency=0.8,BorderSizePixel=0,
+		Size=UDim2.new(0, 220, 0, 60),Position=UDim2.new(0, 5, 0, 5),Name="main_Frame",Parent=start_Frame})
+	local menu_Frame = CreateInstance("Frame",{Active=true, Selectable=true,
+		BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
+		Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 5, 0, 65),Name="menu_Frame",Parent=start_Frame})
+	local field_Frame = CreateInstance("Frame",{Active=true, Selectable=true,
+		BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
+		Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 80, 0, 0),Name="field_Frame",Parent=menu_Frame})	
+	local actions_Frame = CreateInstance("Frame",{Active=true, Selectable=true,
+		BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
+		Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 80, 0, 0),Name="actions_Frame",Parent=menu_Frame})	
+	local settings_Frame = CreateInstance("Frame",{Active=true, Selectable=true,
+		BackgroundColor3=GuiColor.Base_,Transparency=1,BorderSizePixel=0,Visible=false,
+		Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 80, 0, 0),Name="settings_Frame",Parent=menu_Frame})
+
+------------------main_Frame------------------
+	local buttonTPTop = CreateButton({Size=UDim2.new(0, 20, 0, 12),Position=UDim2.new(0, 1, 0, 1),
+		Text=" ",Name="buttonTPTop",Parent=main_Frame})
+	local buttonTPPep = CreateButton({Size=UDim2.new(0, 20, 0, 12),Position=UDim2.new(0, 1, 0, 17),
+		Text=" ",Name="buttonTPPep",Parent=main_Frame})
+	local textView = CreateInstance("TextLabel",{Size=UDim2.new(0, 140, 0, 24),Position=UDim2.new(0, 20, 0, 5),
+		BackgroundColor3=GuiColor.Base_,BackgroundTransparency=1,BorderSizePixel=0,TextTransparency=0,
+		TextColor3=GuiColor.Text_White_,Font=Enum.Font.GothamBold,TextSize=14,TextWrapped=false,
+		Text = "Pepper Patch",Name="textView",Parent=main_Frame})
+	local goToViciousButton = CreateButton({Size=UDim2.new(0, 25, 0, 12),Position=UDim2.new(0, 160, 0, 1),
+		Text="Vicious",Name="goToViciousButton",Parent=main_Frame,TextSize = 4,
+		Visible=false,BackgroundColor3=GuiColor.Red_})
+	local goToWindyButton = CreateButton({Size=UDim2.new(0, 25, 0, 12),Position=UDim2.new(0, 160, 0, 17),
+		Text="Windy",Name="goToWindyButton",Parent=main_Frame,TextSize=4,
+		Visible=false,BackgroundColor3=GuiColor.Color_LBlack_})
+	local seeMushroomButton = CreateButton({Size=UDim2.new(0, 25, 0, 24),Position=UDim2.new(0, 160, 0, 34),
+		Text="0",Name="seeMushroomButton",Parent=main_Frame,TextSize = 16})
+	local buttonMenu = CreateButton({Size=UDim2.new(0, 30, 0, 24),Position=UDim2.new(0, 5, 0, 34),
+		Text=">>",Name="buttonMenu",Parent=main_Frame,TextSize = 14})
+	local buttonFarm = CreateButton({Size=UDim2.new(0, 34, 0, 24),Position=UDim2.new(0, 85, 0, 34),
+		Text="Start",Name="buttonFarm",Parent=main_Frame})
+	local buttonFarmToSp = CreateButton({Size=UDim2.new(0, 34, 0, 24),Position=UDim2.new(0, 121, 0, 34),
+		Text="Start",Name="buttonFarmToSp",Parent=main_Frame,TextSize = 6})
+	
+------------------settings_Frame------------------
+	ButtonState.Forms(ButtonSet,1,1,1)
+	local buttonSpeed = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Speed: ",Name="buttonSpeed",Parent=settings_Frame})
+	ButtonState.Forms(ButtonSet,8,2,2)
+	local buttonAutoTracking = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="ATracking",Name="buttonAutoTracking",Parent=settings_Frame})
+		
+	ButtonState.Forms(ButtonSet,1,2,1)
+	local buttonAutoMushrooms = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="AMush",Name="buttonAutoMushrooms",Parent=settings_Frame,TextSize = 10})
+		
+	ButtonState.Forms(ButtonSet,4,2,1)
+	local buttonAutoVicious = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="AVicious",Name="buttonAutoVicious",Parent=settings_Frame,TextSize = 10})
+	ButtonState.Forms(ButtonSet,5,2,1)
+	local buttonAutoWindy = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="AWindy",Name="buttonAutoWindy",Parent=settings_Frame,TextSize = 10})
+	ButtonState.Forms(ButtonSet,6,2,1)
+	local buttonAutoStickBug = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="AStickBug",Name="buttonAutoStickBug",Parent=settings_Frame,TextSize = 10})
+		
+	return xxxl_GUI
+end
+
+local XXXLGui = createGui()
+local dark_Frame = XXXLGui:WaitForChild("dark_Frame")
+local start_Frame = XXXLGui:WaitForChild("start_Frame")
+local main_Frame = start_Frame:WaitForChild("main_Frame")
+local menu_Frame = start_Frame:WaitForChild("menu_Frame")
+local field_Frame = menu_Frame:WaitForChild("field_Frame")
+local actions_Frame = menu_Frame:WaitForChild("actions_Frame")
+local settings_Frame = menu_Frame:WaitForChild("settings_Frame")
+
+local buttonTPTop = main_Frame:WaitForChild("buttonTPTop")
+local buttonTPPep = main_Frame:WaitForChild("buttonTPPep")
+local goToViciousButton = main_Frame:WaitForChild("goToViciousButton")
+local goToWindyButton = main_Frame:WaitForChild("goToWindyButton")
+local seeMushroomButton = main_Frame:WaitForChild("seeMushroomButton")
+local textView = main_Frame:WaitForChild("textView")
+local buttonMenu = main_Frame:WaitForChild("buttonMenu")
+local buttonFarm = main_Frame:WaitForChild("buttonFarm")
+local buttonFarmToSp = main_Frame:WaitForChild("buttonFarmToSp")
+
+local buttonSpeed = settings_Frame:WaitForChild("buttonSpeed")
+local buttonAutoTracking = settings_Frame:WaitForChild("buttonAutoTracking")
+local buttonAutoMushrooms = settings_Frame:WaitForChild("buttonAutoMushrooms")
+local buttonAutoVicious = settings_Frame:WaitForChild("buttonAutoVicious")
+local buttonAutoWindy = settings_Frame:WaitForChild("buttonAutoWindy")
+local buttonAutoStickBug = settings_Frame:WaitForChild("buttonAutoStickBug")
+
+XXXLGui.Parent = game.CoreGui
+
+local ConnectionKey = {ConnectionT,ConnectionCV,ConnectionRX,VirtualUserActive}
+local HumanoidState = {Speed=0,TmpSpeed=0,SetMask=0}
 local HumanoidAction = {AllStarting=true,Farm=false,FarmToSp=false,Pause=false,CapacityUnloading=false}
+
+local Zone = {NPCBees_="NPCBees",Monsters_="Monsters";}
+local Bosses = {Windy_="Windy",Vicious_="Vicious",Stick_Bug="Stick Bug",Snail_="Snail"}--Monsters
+
 local AutoFlags = {
+	TrackingBottonDown=false,
 	DigBottonDown=false,
-	MobsBottonDown=false,
 	ViciousBottonDown=false,
 	WindyBottonDown=false,
 	MondoBottonDown=false,
 	StickBugBottonDown=false,
 	DispenserBottonDown=false,
+	BasicEggBottonDown=false,
 	BoostBottonDown=false,
 	TornadoBottonDown=false,
+	TicketBottonDown=false,
 	MushroomsBottonDown=false,
-	ChristmasBottonDown=false,
-	DisableFoldingBotton=false}
+	ConvertMaskBottonDown=false,
+	DisableFolding=false}
 local ActionFlags = {
-	BalloonBottonDown=false,
-	BalloonTrackingStarted=false,
-	BalloonTrackingStarted_=false,
+	BalloonUnloading=false,
 	StateBalloonBotton=0,
-	CapasityBalloon=0,
+	BalloonCapasity=0,
 	TimeAfterBalloonUnloading=0,
 	SnailTimeBottonDown=0,
+	Stickers={},
 	MushroomLvl=0,
 	MushroomClass=0,
 	MushroomCFrame=CFrame.new(-100,-100,-100)}
 
-local function hideFrames()
-	for _,k in pairs(Menu_Frame:GetChildren()) do
-		if	k:IsA("Frame") then
-			k.Visible = false
-		elseif k:IsA("TextButton") then
-			k.BackgroundColor3 = GuiColor.Base_
-		end
+-------------------------------------------
+------------------События------------------
+-------------------------------------------
+spawn(function()
+	fieldPosition = workspace.FlowerZones[textView.Text].Position
+	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
+	humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+	spawnPosHumanoid = game.Players.LocalPlayer.SpawnPos.Value
+	fieldCFrame = CFrame.new(workspace.FlowerZones[textView.Text].Position)
+	--game.Players.LocalPlayer.DevCameraOcclusionMode = Invisicam
+	game.Players.LocalPlayer.CameraMaxZoomDistance = 777
+	workspace.Gravity = 170 --192.5
+
+	BordersField = {distanceToBoard=5,min_X=0,max_X=0,min_Z=0,max_Z=0}
+	function setBordersField(distance)
+		local sizeField = workspace.FlowerZones[textView.Text].Size
+		BordersField.min_X = fieldPosition.x - (sizeField.x / 2) + distance
+		BordersField.max_X = fieldPosition.x + (sizeField.x / 2) - distance
+		BordersField.min_Z = fieldPosition.z - (sizeField.z / 2) + distance
+		BordersField.max_Z = fieldPosition.z + (sizeField.z / 2) - distance
+		wait(.2)
 	end
-end
+	setBordersField(BordersField.distanceToBoard)
+	
+	start_Frame:TweenPosition(UDim2.new(1, -360, 0.09, 0),
+			Enum.EasingDirection.Out, Enum.EasingStyle.Quad, .5, true)
 
-local function displayFrame(button, frame)
-	if	frame.Visible then
-		frame.Visible = false
-		button.BackgroundColor3 = GuiColor.Base_
-	else
-		hideFrames()
-		frame.Visible = true
-		button.BackgroundColor3 = GuiColor.On_Color_B
-	end
-end
-
-local function MenubottonDown()
-if not Menu_Frame.Visible then
-	MenuBotton.BackgroundColor3 = GuiColor.On_Color_G
-	Menu_Frame.Visible = true
-else
-	MenuBotton.BackgroundColor3 = GuiColor.Base_
-	Menu_Frame.Visible = false
-end
-end
-
-local function SpeedBottonFunction()
-local SpeedBottonFunctionIn = coroutine.wrap(function()
-while HumanoidState.Speed > 30 do
-	humanoid.WalkSpeed = HumanoidState.Speed
-	wait(.2)
-end
+	ConnectionKey.VirtualUserActive = game:GetService("VirtualUser")
+	game:GetService("Players").LocalPlayer.Idled:connect(function()
+		ConnectionKey.VirtualUserActive:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+		wait(1)
+		ConnectionKey.VirtualUserActive:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+		--print("Player has been idle for " .. time() .. " seconds")
+	end)
 end)
 
-SpeedBottonFunctionIn()
+--====================Function====================--
+--[[local function FunctionIn() end
+coroutine.wrap(FunctionIn)()
+
+local FunctionOn = coroutine.wrap(function() end)
+FunctionOn()]]
+
+local function hideMenu(bool)---+++
+	local function onMenu()
+		buttonMenu.BackgroundColor3 = GuiColor.On_Color_G
+		menu_Frame.Visible = true
+	end
+	
+	local function offMenu()
+		buttonMenu.BackgroundColor3 = GuiColor.Base_
+		menu_Frame.Visible = false
+	end
+	
+	if bool == nil then
+		if not menu_Frame.Visible then
+			onMenu()
+		else
+			offMenu()
+		end
+	elseif bool == true then onMenu()
+	else  offMenu()
+	end
+end
+
+
+local function checkingStopping()
+	if HumanoidAction.Pause or HumanoidAction.CapacityUnloading then
+		return true
+	else
+		return false
+	end
 end
 
 local lutCollection = false
 local timeLutCollection = 3
 local function TimeLutCollection()
-local TimeLutCollectionIn = coroutine.wrap(function()
-	lutCollection = true
-	wait(timeLutCollection)
-	lutCollection = false
-end)
-
-TimeLutCollectionIn()
+	local TimeLutCollectionIn = coroutine.wrap(function()
+		lutCollection = true
+		wait(timeLutCollection)
+		lutCollection = false
+	end)
+	TimeLutCollectionIn()
 end
 
-local function SplinkerInstalling()
+local function splinkerInstalling()
 	wait(.2)
 	local A_1 = {["Name"] = "Sprinkler Builder"}
 	game:GetService("ReplicatedStorage").Events.PlayerActivesCommand:FireServer(A_1)
 	wait(.2)
 end
 
-local function GoToSpawnPosition()
+local function goToField()
+	fieldPosition = workspace.FlowerZones[textView.Text].Position
+	humanoidRootPart.CFrame = CFrame.new(fieldPosition.x, fieldPosition.y + 1, fieldPosition.z)
+	if not AutoFlags.DisableFolding then hideMenu(false) end
+end
+
+local function goToFieldAndSplinker()
+if HumanoidAction.Farm then
+	goToField()
+	wait(.5)
+	splinkerInstalling()
+	wait(.5)
+end
+end
+
+local function goToSpawn()
 	humanoidRootPart.CFrame = game.Players.LocalPlayer.SpawnPos.Value
 	wait(1)
 	game:GetService("ReplicatedStorage").Events.PlayerHiveCommand:FireServer("ToggleHoneyMaking")
 end
 
-local function CheckBalloon()
+local function onSpawn()
+	local x = humanoidRootPart.Position.x
+	local z = humanoidRootPart.Position.z
+	local delta = 5
+	if (x > spawnPosHumanoid.x - delta) and (x < spawnPosHumanoid.x + delta) and
+		(z > spawnPosHumanoid.z - delta) and (z < spawnPosHumanoid.z + delta) then
+		return true
+	end
+	return false
+end
+
+local function switchMask(object)---+++
+	local function equipingMask(mask,color)
+		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
+		{["Mute"] = true, ["Type"] = mask, ["Category"] = "Accessory"})
+		buttonTPPep.BackgroundColor3 = color
+		wait(.2)
+	end
+
+	local function selectMask(number)
+
+		local mask,color
+		local function white() mask = "Gummy Mask" color = Color3.new(1, 1, 1) end
+		local function blue() mask = "Diamond Mask" color = Color3.new(0.32, 0.4, 1) end
+		local function red() mask = "Demon Mask" color = Color3.new(1, 0.2, 0,06) end
+		local function honey() mask = "Honey Mask" color = Color3.new(1, 1, 0,2) end
+
+		if number == 1 then
+			white()
+		elseif number == 2 then
+			blue()
+		elseif number == 3 then
+			red()
+		elseif number == 4 then
+			honey()
+		elseif number == 0 then
+			if HumanoidState.SetMask == 3 then red()
+			else blue() end
+		end
+		return mask,color
+	end
+
+	local function searchFlowerZone(position)
+
+		local field_Position = workspace.FlowerZones["Dandelion Field"].Position
+		local TmpSizeField = {min_X=0,max_X=0,min_Z=0,max_Z=0}
+
+		local function fieldMinMax(field)
+			field_Position = workspace.FlowerZones[field].Position
+			TmpSizeField.max_Z = field_Position.z + (workspace.FlowerZones[field].Size.z / 2)
+			TmpSizeField.min_Z = field_Position.z - (workspace.FlowerZones[field].Size.z / 2)
+			TmpSizeField.max_X = field_Position.x + (workspace.FlowerZones[field].Size.x / 2)
+			TmpSizeField.min_X = field_Position.x - (workspace.FlowerZones[field].Size.x / 2)
+			wait(.05)
+			if TmpSizeField.max_Z > position.z and TmpSizeField.min_Z < position.z and
+				TmpSizeField.max_X > position.x and TmpSizeField.min_X < position.x then
+				return true
+			else
+				return false
+			end
+		end
+
+		if position.z > 56 then		--1
+			if workspace.FlowerZones["Dandelion Field"].Position.z +
+				(workspace.FlowerZones["Dandelion Field"].Size.z / 2)
+				> position.z then	--2
+				if fieldMinMax("Dandelion Field") then return 1			--,"Dandelion Field"
+				elseif fieldMinMax("Sunflower Field") then return 1		--,"Sunflower Field"
+				elseif fieldMinMax("Blue Flower Field") then return 2	--,"Blue Flower Field"
+				elseif fieldMinMax("Mushroom Field") then return 3		--,"Mushroom Field"
+				elseif fieldMinMax("Rose Field") then return 3			--,"Rose Field"
+				elseif fieldMinMax("Clover Field") then return 0 end	--,"Clover Field" end
+			else
+				if fieldMinMax("Coconut Field") then return 1			--,"Coconut Field"
+				elseif fieldMinMax("Pepper Patch") then return 3 end	--,"Pepper Patch" end
+			end
+		else
+			if workspace.FlowerZones["Strawberry Field"].Position.z -
+				(workspace.FlowerZones["Strawberry Field"].Size.z / 2)
+				< position.z then	--3
+				if fieldMinMax("Strawberry Field") then return 3		--,"Strawberry Field"
+				elseif fieldMinMax("Spider Field") then return 1		--,"Spider Field"
+				elseif fieldMinMax("Bamboo Field") then return 2 end	--,"Bamboo Field" end
+			else
+				if fieldMinMax("Pineapple Patch") then return 1			--,"Pineapple Patch"
+				elseif fieldMinMax("Pumpkin Patch") then return 1		--,"Pumpkin Patch"
+				elseif fieldMinMax("Pine Tree Forest") then return 2	--,"Pine Tree Forest"
+				elseif fieldMinMax("Cactus Field") then return 0		--,"Cactus Field"
+				elseif fieldMinMax("Mountain Top Field") then return 0	--,"Mountain Top Field"
+				elseif fieldMinMax("Stump Field") then return 2 end		--,"Stump Field" end
+			end
+		end
+		return HumanoidState.SetMask
+	end
+
+	local function detectMask(position)
+		if HumanoidState.SetMask == 0 then return end
+		local number = searchFlowerZone(position)
+		equipingMask(selectMask(number))
+	end
+
+	local function equipingSetMask()
+		local mask,color = selectMask(HumanoidState.SetMask)
+		buttonTPTop.BackgroundColor3 = color
+		equipingMask(mask,color)
+	end
+
+	local function setMask(object)
+		if object == "White" then
+			HumanoidState.SetMask = 1
+		elseif object == "Blue" then
+			HumanoidState.SetMask = 2
+		elseif object == "Red" then
+			HumanoidState.SetMask = 3
+		elseif object == "Honey" then
+			HumanoidState.SetMask = 4
+		else
+			return
+		end
+		equipingSetMask()
+	end
+
+	local function exception()
+		if HumanoidState.SetMask == 0 then return end
+		equipingMask(selectMask(HumanoidState.SetMask))
+	end
+
+	if object == nil then
+		if ActionFlags.SnailTimeBottonDown > 0 then
+			equipingMask(selectMask(3))
+		else
+			equipingMask(selectMask(HumanoidState.SetMask))
+		end
+	elseif type(object) == "number" then
+		equipingMask(selectMask(object))
+	elseif type(object) == "vector" then
+		detectMask(object)
+	elseif type(object) == "string" then
+		setMask(object)
+	else
+		exception()
+	end
+end
+
+-----
+local function imUnloadingBackpack()
+	local tmpPollen_ = game.Players.LocalPlayer.CoreStats.Pollen.Value
+	wait(40)
+	while HumanoidAction.CapacityUnloading do
+		if not HumanoidAction.Farm then return end
+		if not onSpawn() or	(tmpPollen_ <= game.Players.LocalPlayer.CoreStats.Pollen.Value) then
+			wait(.1)
+			goToSpawn()
+		end
+		tmpPollen_ = game.Players.LocalPlayer.CoreStats.Pollen.Value
+		wait(10)
+		if game.Players.LocalPlayer.CoreStats.Pollen.Value == 0 then break end
+	end
+end
+
+local function checkBalloon()
 local capasityBalloonText_ = ""
 for _,v in pairs(game.workspace.Balloons.HiveBalloons:GetChildren()) do
-	if string.find(v.Name,"HiveBalloonInstance") then
+	if string.find(v.Name,"HiveBalloonInstance") then			-- ищем HiveBalloonInstance
 		for _,k in pairs(v:GetChildren()) do
 			if k.Name == "BalloonBody" then
-				local distance_ =((k.Position.x - spawnPosHumanoid.x)^2 + 
-					(k.Position.y - spawnPosHumanoid.y)^2 + 
-					(k.Position.z - spawnPosHumanoid.z)^2)^0.5
-				if distance_ < 20 then
+				local distance_ = k.Position.x - spawnPosHumanoid.x
+				if distance_ < 10 and distance_ > -10 then
 					for _, descendant in pairs(k:GetDescendants()) do
 						if (descendant.Name == "Bar") then
 							for _,i in pairs(descendant:GetChildren()) do
 								if (i.Name == "TextLabel") then
 									capasityBalloonText_ = string.gsub(i.Text, ",", "")
 									if capasityBalloonText_ == "" then
-										ActionFlags.CapasityBalloon = 0
+										ActionFlags.BalloonCapasity = 0
 									else
-										ActionFlags.CapasityBalloon = tonumber(capasityBalloonText_)
+										ActionFlags.BalloonCapasity = tonumber(capasityBalloonText_)
 									end
 									return
 								end
@@ -306,152 +551,127 @@ for _,v in pairs(game.workspace.Balloons.HiveBalloons:GetChildren()) do
 		end
 	end
 end
-ActionFlags.CapasityBalloon = 0
+ActionFlags.BalloonCapasity = 0
 end
 
-local function CapacitySpawnPositionChecking()
-local CapacitySpawnPositionCheckingIn = coroutine.wrap(function()
-local tmpPollen_ = game.Players.LocalPlayer.CoreStats.Pollen.Value
-wait(40)
-while HumanoidAction.CapacityUnloading do
-	if not HumanoidAction.Farm then break end
-	if ((Vector3.new(spawnPosHumanoid.x, spawnPosHumanoid.y, spawnPosHumanoid.z) -
-		humanoidRootPart.Position).magnitude >= 7) or	
-		(tmpPollen_ <= game.Players.LocalPlayer.CoreStats.Pollen.Value) then
-		wait(.1)
-		GoToSpawnPosition()
-	end
-	tmpPollen_ = game.Players.LocalPlayer.CoreStats.Pollen.Value
+local function imUnloadingBalloon()
+	checkBalloon()
+	tmpPollen_ = ActionFlags.BalloonCapasity
 	wait(10)
-	if game.Players.LocalPlayer.CoreStats.Pollen.Value == 0 then break end
-end
-end)
-CapacitySpawnPositionCheckingIn()
-end
-
-local function BalloonSpawnPositionChecking()
-local BalloonSpawnPositionCheckingIn = coroutine.wrap(function()
-CheckBalloon()
-tmpPollen_ = ActionFlags.CapasityBalloon
-wait(10)
-while HumanoidAction.CapacityUnloading do
-	if not HumanoidAction.Farm then break end
-	CheckBalloon()
-	if ActionFlags.CapasityBalloon == 0 then break end
-	if ((Vector3.new(spawnPosHumanoid.x, spawnPosHumanoid.y, spawnPosHumanoid.z) -
-		humanoidRootPart.Position).magnitude >= 7) or	
-		(tmpPollen_ <= ActionFlags.CapasityBalloon) then
-		wait(.1)
-		GoToSpawnPosition()
+	while HumanoidAction.CapacityUnloading do
+		if not HumanoidAction.Farm then return end
+		checkBalloon()
+		if ActionFlags.BalloonCapasity == 0 then return end
+		if not onSpawn() or	(tmpPollen_ <= ActionFlags.BalloonCapasity) then
+			wait(.1)
+			goToSpawn()
+		end
+		tmpPollen_ = ActionFlags.BalloonCapasity
+		wait(10)
 	end
-	tmpPollen_ = ActionFlags.CapasityBalloon
-	wait(10)
-end
-end)
-BalloonSpawnPositionCheckingIn()
 end
 
-local moveToPointFlag = false
 local function MoveToPoint(targetPoint)
-	moveToPointFlag = false
+	local targetReached = false	
+	-- слушайте, как гуманоид достигает своей цели
 	local connection_
 	connection_ = humanoid.MoveToFinished:Connect(function(reached)
-		moveToPointFlag = true
+		targetReached = true
 		connection_:Disconnect()
 		connection_ = nil
 	end)
+	-- начать идти
 	humanoid:MoveTo(targetPoint)
-	while not moveToPointFlag do
+	while not targetReached do
 		if not AutoFlags.MobsBottonDown then break end
+		-- гуманоид все еще существует?
 		if not (humanoid and humanoid.Parent) then break end
+		-- цель изменилась?
 		if humanoid.WalkToPoint ~= targetPoint then	break end
+		-- обновить таймаут
 		humanoid:MoveTo(targetPoint)
 		wait(1)
 	end
 end
 
-local function MoveToToken(targetPoint)
-	moveToPointFlag = false	
+local function moveToToken(targetPoint)
+	local targetReached = false	
 	local connection_
 	connection_ = humanoid.MoveToFinished:Connect(function(reached)
-		moveToPointFlag = true
+		targetReached = true
 		connection_:Disconnect()
 		connection_ = nil
 	end)
+	
+	local timeConnection_
+	timeConnection_ = function()
+		wait(3)
+		if not targetReached then
+			targetReached = true
+		end
+		wait()
+		if connection then
+			connection:Disconnect()
+			connection = nil
+		end
+	end
+	coroutine.wrap(timeConnection_)()
+
 	humanoid:MoveTo(targetPoint)
-	while not moveToPointFlag do
+	while not targetReached do
 		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
-		if not (humanoid and humanoid.Parent) then break end
+		--if not (humanoid and humanoid.Parent) then break end
 		if humanoid.WalkToPoint ~= targetPoint then	break end
 		humanoid:MoveTo(targetPoint)
 		wait(.01)
 	end
 end
 
-local function tpToField()
-	local function NoVisibleMenuPage(int)
-		if (not AutoFlags.DisableFoldingBotton) and (int == 2) then
-			MenuBotton.BackgroundColor3 = GuiColor.Base_
-			Menu_Frame.Visible = false
-		end
-	end
-	
-	fieldPosition = workspace.FlowerZones[TextView.Text].Position	
-	humanoidRootPart.CFrame = CFrame.new(fieldPosition.x, fieldPosition.y + 1, fieldPosition.z)
-	NoVisibleMenuPage(2)
+local function goToFieldOrSpawn()
+	if HumanoidAction.Farm then goToField()
+	else goToSpawn() end
 end
 
-local function GoToFieldAndSplinker()
-if HumanoidAction.Farm then
-	tpToField()
-	wait(1)
-	SplinkerInstalling()
-	wait(1)
-end
-end
-
-local function GoToFieldOrSpawn()
-	if HumanoidAction.Farm then tpToField()
-	else GoToSpawnPosition() end
-end
-
-local function TimeAfterBalloonUnloading()
+local function timeAfterBalloonUnloading()
 	ActionFlags.TimeAfterBalloonUnloading = time()
 end
 
-local function BackpackBalloonCheckingUnloading()
-	if game.Players.LocalPlayer.CoreStats.Capacity.Value <=	game.Players.LocalPlayer.CoreStats.Pollen.Value then
-		if not HumanoidAction.Farm then return end
-		while HumanoidAction.Pause do
+local function backpackBalloonCheckingUnloading()
+	if game.Players.LocalPlayer.CoreStats.Capacity.Value <=
+		game.Players.LocalPlayer.CoreStats.Pollen.Value then
+		
+		while checkingStopping() do
 			wait(1)
-			if not HumanoidAction.Farm then return end
 		end
+		if not HumanoidAction.Farm then return end
+		
 		HumanoidAction.CapacityUnloading = true
 		wait(.5)
-		GoToSpawnPosition()
+		goToSpawn()
+		if AutoFlags.ConvertMaskBottonDown then switchMask(4) end
 		wait(4)
-		CapacitySpawnPositionChecking()
+		coroutine.wrap(imUnloadingBackpack)()
+		
 		repeat
-			if not HumanoidAction.Farm then break end
-			wait(.5)
+			if not HumanoidAction.Farm then return end
+			wait(1)
 		until game.Players.LocalPlayer.CoreStats.Pollen.Value == 0
-	print("Capacity unloaded")
-		if ActionFlags.BalloonBottonDown then
-			BalloonSpawnPositionChecking()
+		print("< Capacity unloaded >")
+		if ActionFlags.BalloonUnloading then
+			coroutine.wrap(imUnloadingBalloon)()
 			wait(.2)
-			while ActionFlags.CapasityBalloon > 0 do
-				if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+			while ActionFlags.BalloonCapasity > 0 do
+				if not HumanoidAction.Farm or HumanoidAction.Pause then return end
 				wait(1)
-				CheckBalloon()
+				checkBalloon()
 			end
-			if ActionFlags.CapasityBalloon == 0 then
-				TimeAfterBalloonUnloading()
-				print("Balloon unloaded")
-			end
+			print("< Balloon unloaded >")
 		end
 		wait(4)
+		
+		if AutoFlags.ConvertMaskBottonDown then switchMask() end
 		HumanoidAction.CapacityUnloading = false
-		GoToFieldAndSplinker()
+		goToFieldAndSplinker()
 	end
 end
 
@@ -464,39 +684,40 @@ while HumanoidAction.Pause do
 end
 HumanoidAction.CapacityUnloading = true
 wait(5)
-GoToSpawnPosition()
+goToSpawn()
 wait(4)
-CapacitySpawnPositionChecking()
+coroutine.wrap(imUnloadingBackpack)()
 repeat
 	if not HumanoidAction.Farm then break end
 	wait(.5)
 until game.Players.LocalPlayer.CoreStats.Pollen.Value == 0
-if ActionFlags.BalloonBottonDown then
-	BalloonSpawnPositionChecking()
+if ActionFlags.BalloonUnloading then
+	coroutine.wrap(imUnloadingBalloon)()
 	wait(.2)
-	while ActionFlags.CapasityBalloon > 0 do
+	while ActionFlags.BalloonCapasity > 0 do
 		if not HumanoidAction.Farm then break end
-		CheckBalloon()
+		checkBalloon()
 		wait(1)
 	end
-	if ActionFlags.CapasityBalloon == 0 then
-		TimeAfterBalloonUnloading()
-		print("Balloon unloaded afte 45 min")
+	if ActionFlags.BalloonCapasity == 0 then
+		timeAfterBalloonUnloading()
+		print("BALLOON UNLOADED ")
 	end
 end
-wait(4)
+wait(timeAfte_)--4
 HumanoidAction.CapacityUnloading = false
-GoToFieldAndSplinker()
+goToFieldAndSplinker()
 end
 
 local function BackpackUnloadingMushroom(positionMushroom_)
+	-- проверяем заполнение рюкзака
 	if game.Players.LocalPlayer.CoreStats.Capacity.Value <=	game.Players.LocalPlayer.CoreStats.Pollen.Value then
 		if not AutoFlags.MushroomsBottonDown then return end
 		HumanoidAction.CapacityUnloading = true
 		wait(.5)
-		GoToSpawnPosition()
+		goToSpawn()
 		wait(4)
-		CapacitySpawnPositionChecking()
+		coroutine.wrap(imUnloadingBackpack)()
 		repeat
 			if not AutoFlags.MushroomsBottonDown then break end
 			wait(.5)
@@ -508,108 +729,68 @@ local function BackpackUnloadingMushroom(positionMushroom_)
 	end
 end
 
-local function SearchFlowerZone(position)
-
-local field_Position = workspace.FlowerZones["Dandelion Field"].Position
-local TmpSizeField = {
-	min_X =  0,
-	max_X =  0,
-	min_Z =  0,
-	max_Z =  0,}
+--========================================--
+local WRP = {---+++
+	remoteQuest = function()--coroutine.wrap(WRP.remoteQuest)()
+		local completeQuest = game.ReplicatedStorage.Events.CompleteQuestFromPool
+		completeQuest:FireServer("Brown Bear")
+		wait(.1)
+		completeQuest:FireServer("Polar Bear")
+		wait(.1)
+		completeQuest:FireServer("Brown Bear 2")
+		wait(.1)
+		completeQuest:FireServer("Black Bear 2")
+		wait(.1)
+		completeQuest:FireServer("Bucko Bee")
+		wait(.1)
+		completeQuest:FireServer("Riley Bee")
+		wait(.5)
+		local giveQuest	= game.ReplicatedStorage.Events.GiveQuestFromPool
+		giveQuest:FireServer("Brown Bear")
+		wait(.1)
+		giveQuest:FireServer("Polar Bear")
+		wait(.1)
+		giveQuest:FireServer("Brown Bear 2")
+		wait(.1)
+		giveQuest:FireServer("Black Bear 2")
+		wait(.1)
+		giveQuest:FireServer("Bucko Bee")
+		wait(.1)
+		giveQuest:FireServer("Riley Bee")
+		wait(.1)
+	end,
 	
-local function MinMaxField(field)
-	field_Position = workspace.FlowerZones[field].Position
-	TmpSizeField.max_Z = field_Position.z + (workspace.FlowerZones[field].Size.z / 2)
-	TmpSizeField.min_Z = field_Position.z - (workspace.FlowerZones[field].Size.z / 2)
-	TmpSizeField.max_X = field_Position.x + (workspace.FlowerZones[field].Size.x / 2)
-	TmpSizeField.min_X = field_Position.x - (workspace.FlowerZones[field].Size.x / 2)
-	wait(.05)
-	if TmpSizeField.max_Z > position.z and TmpSizeField.min_Z < position.z and
-		TmpSizeField.max_X > position.x and TmpSizeField.min_X < position.x then
-		return true
-	else
-		return false
-	end
-end
-
-	if position.z > 56 then
-		if workspace.FlowerZones["Dandelion Field"].Position.z +
-			(workspace.FlowerZones["Dandelion Field"].Size.z / 2)
-			> position.z then
-			if MinMaxField("Dandelion Field") then return 1
-			elseif MinMaxField("Sunflower Field") then return 1
-			elseif MinMaxField("Blue Flower Field") then return 2
-			elseif MinMaxField("Mushroom Field") then return 3
-			elseif MinMaxField("Rose Field") then return 3
-			elseif MinMaxField("Clover Field") then return 0 end
-		else
-			if MinMaxField("Coconut Field") then return 1
-			elseif MinMaxField("Pepper Patch") then return 3 end
+	remoteStQuest = function()--coroutine.wrap(WRP.remoteQuest)()
+		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip", {
+			["Mute"] = true,["Type"] = "Sticker-Seeker",["Category"] = "Collector"})
+		wait(1)
+		game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Sticker-Seeker")
+		wait(.5)
+		game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Sticker-Seeker")
+		wait(.1)
+	end,
+	
+	applySpeed = function()--coroutine.wrap(WRP.applySpeed)()
+		while HumanoidState.Speed > 30 do
+			humanoid.WalkSpeed = HumanoidState.Speed
+			wait(timtSpeeding_)
 		end
-	else
-		if workspace.FlowerZones["Strawberry Field"].Position.z -
-			(workspace.FlowerZones["Strawberry Field"].Size.z / 2)
-			< position.z then
-			if MinMaxField("Strawberry Field") then return 3
-			elseif MinMaxField("Spider Field") then return 1
-			elseif MinMaxField("Bamboo Field") then return 2 end
-		else
-			if MinMaxField("Pineapple Patch") then return 1
-			elseif MinMaxField("Pumpkin Patch") then return 1
-			elseif MinMaxField("Pine Tree Forest") then return 2
-			elseif MinMaxField("Cactus Field") then return 0
-			elseif MinMaxField("Mountain Top Field") then return 0
-			elseif MinMaxField("Stump Field") then return 2 end
+	end,
+	
+	autoDiging = function()--coroutine.wrap(WRP.autoDiging)()
+		while AutoFlags.DigBottonDown do
+			game:GetService("ReplicatedStorage").Events.ToolCollect:FireServer()
+			wait(timtDiging_)
 		end
-	end
-	return 0
-end
-
-local function MaskEquiping(position)
-local MaskEquipingIn = coroutine.wrap(function()
-	if HumanoidState.MaskEquipped == 0 then
-		return
-	end
-	local maskEquiping_
-	if position == nil then
-		if ActionFlags.SnailTimeBottonDown > 0 then
-			maskEquiping_ = 3
-		else
-			maskEquiping_ = HumanoidState.MaskEquipped
-		end
-	else
-		maskEquiping_ = SearchFlowerZone(position)
-		if maskEquiping_ == 0 then
-			maskEquiping_ = HumanoidState.MaskEquipped
-		end
-	end
-	local mask_
-	if maskEquiping_ == 1 then
-		mask_ = "Gummy Mask"
-		TPPepButton.BackgroundColor3 = Color3.new(1, 1, 1)
-	elseif maskEquiping_ == 2 then
-		mask_ = "Diamond Mask"
-		TPPepButton.BackgroundColor3 = Color3.new(0.32, 0.4, 1)
-	elseif maskEquiping_ == 3 then
-		mask_ = "Demon Mask"
-		TPPepButton.BackgroundColor3 = Color3.new(1, 0.2, 0,06)
-	else return
-	end	
-	game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-	{["Mute"] = true, ["Type"] = mask_, ["Category"] = "Accessory"})
-	wait(.2)
-end)
-
-MaskEquipingIn()	
-end
+	end}
 
 local function MushroomSearch()
 if ActionFlags.MushroomLvl > 0 then
 	for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
-		if string.find(v.Name,"PuffballMushroom") then
+		if string.find(v.Name,"PuffballMushroom") then			-- ищем грибы
 			local descendants_ = v:GetDescendants()
 			for _, descendant in pairs(descendants_) do
-				if descendant.Name == "TextLabel" then
+				if descendant.Name == "TextLabel" then			-- ищем уровень гриба
 					if (ActionFlags.MushroomClass == 1) or
 						(ActionFlags.MushroomClass == 2 and string.find(descendant.Text, "Rare")) or
 						(ActionFlags.MushroomClass == 3 and string.find(descendant.Text, "Epic")) or
@@ -638,200 +819,225 @@ if ActionFlags.MushroomLvl > 0 then
 	for _, k in pairs(mushroom_:GetDescendants()) do
 		if k:IsA("BasePart") then
 			humanoidRootPart.CFrame = k.CFrame
-			SplinkerInstalling()
+			splinkerInstalling()
 			return
 		end
 	end
 end
 end
 
-local function RemoteQuest()
-local RemoteQuestIn = coroutine.wrap(function()
-game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Brown Bear")
-wait(.1)
-game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Polar Bear")
-wait(.1)
-game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Brown Bear 2")
-wait(.1)
-game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Black Bear 2")
-wait(.1)
-game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Bucko Bee")
-wait(.1)
-game.ReplicatedStorage.Events.CompleteQuestFromPool:FireServer("Riley Bee")
-wait(.5)
-game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Brown Bear")
-wait(.1)
-game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Polar Bear")
-wait(.1)
-game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Brown Bear 2")
-wait(.1)
-game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Black Bear 2")
-wait(.1)
-game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Bucko Bee")
-wait(.1)
-game.ReplicatedStorage.Events.GiveQuestFromPool:FireServer("Riley Bee")
-wait(.1)
-end)
-
-RemoteQuestIn()
-end
-
-local function AutoMobsKillFunction()
-local function Collect_Dist30()
-	for _,v in pairs(workspace.Collectibles:GetChildren()) do
-	if (v.Position - humanoidRootPart.Position).magnitude <= 30 then
-	if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
-	if AutoFlags.MobsBottonDown then
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
-		wait(.2)
-	else
-		break
-	end
-	end
-	end
-	end
-end
-
-local AutoMobsKill = coroutine.wrap(function()
-while AutoFlags.MobsBottonDown do
-	RemoteQuest()
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(25)
-	end
-	HumanoidAction.Pause = true
-	wait(2)
-	humanoidRootPart.CFrame = Waypoints["Star Room"]
-	wait(10)
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(104, 66, 282))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(151, 34, 197))
-		wait(5)
-		for count = 1, 5 do	Collect_Dist30() end
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(120, 4, 104))
-		wait(5)
-		for count = 1, 5 do	Collect_Dist30() end
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(105, 4, 87))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(39, 4, 140))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-5, 4, 174))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-85, 4, 120))		
-		wait(5)
-		for count = 1, 5 do	Collect_Dist30() end
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-85, 4, 120))	
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-13, 4, 171))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(0, 20, 50))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-33, 20, -2))
-		wait(5)
-		for count = 1, 5 do	Collect_Dist30() end
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-120, 20, 13))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-180, 20, -3))
-		wait(5)
-		for count = 1, 5 do	Collect_Dist30() end
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-137, 20, 59))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-239, 35, 56))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-245, 68, -81))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-328, 68, -181))
-		wait(9)
-		for count = 1, 9 do	Collect_Dist30() end
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-336, 68, -77))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-332, 20, 130))
-		wait(9)
-		for count = 1, 9 do	Collect_Dist30() end
-	MoveToPoint(Vector3.new(-332, 20, 130))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-266, 20, 177))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-215, 4, 206))--
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-208, 4, 140))--
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-90, 4, 214))--
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(0, 4, 225))--
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(-13, 4, 171))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(0, 20, 50))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(150, 20, -28))
-		wait(7)
-		for count = 1, 5 do	Collect_Dist30() end
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(205, 20, -24))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(204, 42, 56))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(227, 42, 56))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(232, 68, -86))
-		if not AutoFlags.MobsBottonDown	then break end
-	MoveToPoint(Vector3.new(253, 68, -205))
-		wait(5)
-		for count = 1, 5 do	Collect_Dist30() end
-	wait(1)
-	if not AutoFlags.MobsBottonDown then HumanoidAction.Pause = false break end	
-	if HumanoidAction.Farm then tpToField()
-	else GoToSpawnPosition() end
-	wait(5)
-	HumanoidAction.Pause = false
-	for mi = 1, 20 do
-	for delta = 1, 3 do
-		if not AutoFlags.MobsBottonDown then break end
-		wait(20)
-	end
-	end	
-end
-HumanoidAction.Pause = false
-end)
-
-AutoMobsKill()
-end
-
-local function AutoDiging()
-local AutoDigIn = coroutine.wrap(function()
-while AutoFlags.DigBottonDown do
-	wait(0.3)           
-	for _,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
-		if v:IsA("Tool") then
-			v.ClickEvent:FireServer()
+searchCFrame = function(object)
+	for _, k in pairs(object:GetDescendants()) do
+		if	k:IsA("BasePart") then
+			return k.CFrame
 		end
 	end
 end
-end)
 
-AutoDigIn()
+checkMonster = function(zone,monster_name)
+	for _,v in pairs(game.workspace[zone]:GetChildren()) do
+		if	string.find(v.Name,monster_name) then
+			return true,v
+		end
+	end
+	return false
 end
 
-local function checkKilled(timeDelay)
+goToMonster = function(zone,monster_name)
+	local is,monster = checkMonster(zone,monster_name)
+	if is then
+		humanoidRootPart.CFrame = searchCFrame(monster)
+		print("_Go to ",monster_name,"_")
+		return monster
+	end
+end
+
+----------------------------------------------------
+local trackingFunction = function()
+	local function trackingMonsters()
+		if	checkMonster(Zone.Monsters_,Bosses.Windy_) or
+			checkMonster(Zone.NPCBees_,Bosses.Windy_) then
+			goToWindyButton.Visible = true
+			buttonAutoWindy.TextColor3 = GuiColor.Color_LBlack_
+			textView.TextColor3 = GuiColor.Color_LBlack_
+		else
+			goToWindyButton.Visible = false
+			buttonAutoWindy.TextColor3 = GuiColor.Text_White_
+			textView.TextColor3 = GuiColor.Text_White_
+		end
+		if	checkMonster(Zone.Monsters_,Bosses.Vicious_) then
+			goToViciousButton.Visible = true
+			buttonAutoVicious.TextColor3 = GuiColor.Text_Red_
+			textView.TextColor3 = GuiColor.Text_Red_
+		else
+			goToViciousButton.Visible = false
+			buttonAutoVicious.TextColor3 = GuiColor.Text_White_
+			textView.TextColor3 = GuiColor.Text_White_
+		end
+		if	checkMonster(Zone.Monsters_,Bosses.Stick_Bug) then
+			buttonAutoStickBug.TextColor3 = GuiColor.Green_
+		else
+			buttonAutoStickBug.TextColor3 = GuiColor.Text_White_
+		end
+	end
+
+	local function SearchMushroomCFrame(mushroom)
+		for _, k in pairs(mushroom:GetDescendants()) do
+			if k:IsA("BasePart") then
+				ActionFlags.MushroomCFrame = k.CFrame
+				break
+			end
+		end
+	end
+
+	local function SearchMushroomMaxCFrame(mushroom)
+	for _, k in pairs(mushroom:GetDescendants()) do
+		if k:IsA("BasePart") then
+			if ActionFlags.MushroomCFrame.Y <
+				k.CFrame.Y then
+				ActionFlags.MushroomCFrame = k.CFrame
+				break
+			end
+		end
+	end
+	end
+
+	local function MushroomDetect()
+	local detectClassMushroom_ = 0
+	local detectMaxClassMushroom_ = 0
+	local detectLvlMushroom_ = 0
+	local detectMaxLvlMushroom_ = 0
+	for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
+		if string.find(v.Name,"PuffballMushroom") then				-- ищем грибы
+			local descendants_ = v:GetDescendants()
+			for _, descendant in pairs(descendants_) do
+				if descendant.Name == "TextLabel" then				-- ищем уровень гриба
+					if string.find(descendant.Text, "Rare") then
+						detectClassMushroom_ = 2
+					elseif string.find(descendant.Text, "Epic") then
+						detectClassMushroom_ = 3
+					elseif string.find(descendant.Text, "Legendary") then
+						detectClassMushroom_ = 4
+					elseif string.find(descendant.Text, "Mythic") then
+						detectClassMushroom_ = 5
+					else
+						detectClassMushroom_ = 1
+					end
+					if detectMaxClassMushroom_ < detectClassMushroom_ then
+						detectMaxClassMushroom_ = detectClassMushroom_
+						detectMaxLvlMushroom_ = tonumber(string.match(descendant.Text, "%d+"))
+						SearchMushroomCFrame(v)
+					elseif detectMaxClassMushroom_ == detectClassMushroom_ then
+						detectLvlMushroom_ = tonumber(string.match(descendant.Text, "%d+"))
+						if detectMaxLvlMushroom_ < detectLvlMushroom_ then
+							detectMaxLvlMushroom_ = detectLvlMushroom_
+							SearchMushroomCFrame(v)
+						elseif detectMaxLvlMushroom_ == detectLvlMushroom_ then
+							SearchMushroomMaxCFrame(v)
+						end
+					end
+					ActionFlags.MushroomClass = detectMaxClassMushroom_ --
+					ActionFlags.MushroomLvl = detectMaxLvlMushroom_
+				end
+			end
+		end
+	end
+	if detectMaxClassMushroom_ == 0 then
+		seeMushroomButton.BackgroundColor3 = GuiColor.Base_
+		if not AutoFlags.MushroomsBottonDown then
+			buttonAutoMushrooms.BackgroundColor3 = GuiColor.Base_ end
+	elseif detectMaxClassMushroom_ == 1 then
+		seeMushroomButton.BackgroundColor3 = Color3.new(0.5, 0.25, 0.25)	-- коричневый
+		if not AutoFlags.MushroomsBottonDown then
+			buttonAutoMushrooms.BackgroundColor3 = Color3.new(0.5, 0.25, 0.25) end
+	elseif detectMaxClassMushroom_ == 2 then
+		seeMushroomButton.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75)	-- серый
+		if not AutoFlags.MushroomsBottonDown then
+			buttonAutoMushrooms.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75) end
+	elseif detectMaxClassMushroom_ == 3 then
+		seeMushroomButton.BackgroundColor3 = Color3.new(1, 1, 0)	-- желтый
+		if not AutoFlags.MushroomsBottonDown then
+			buttonAutoMushrooms.BackgroundColor3 = Color3.new(1, 1, 0) end
+	elseif detectMaxClassMushroom_ == 4 then
+		seeMushroomButton.BackgroundColor3 = Color3.new(0, 1, 1)	-- голубой
+		if not AutoFlags.MushroomsBottonDown then
+			buttonAutoMushrooms.BackgroundColor3 = Color3.new(0, 1, 1) end
+	elseif detectMaxClassMushroom_ == 5 then
+		seeMushroomButton.BackgroundColor3 = Color3.new(0.5, 0, 1)	-- фиолетовый
+		if not AutoFlags.MushroomsBottonDown then
+			buttonAutoMushrooms.BackgroundColor3 = Color3.new(0.5, 0, 1) end
+	end
+	if detectMaxLvlMushroom_ > 0 then
+		seeMushroomButton.Text = tostring(detectMaxLvlMushroom_)
+		seeMushroomButton.Visible = true
+		buttonAutoMushrooms.Text = "AMush "..tostring(detectMaxLvlMushroom_)
+	else
+		seeMushroomButton.Text = "0"
+		seeMushroomButton.Visible = false
+		buttonAutoMushrooms.Text = "AMush"
+	end
+	end
+
+	while AutoFlags.TrackingBottonDown and HumanoidAction.AllStarting do
+		trackingMonsters()
+		wait(.2)
+		MushroomDetect()
+		wait(.3)
+	end
+	seeMushroomButton.Text = "0"
+	seeMushroomButton.Visible = false
+	buttonAutoMushrooms.Text = "AMush"
+	buttonAutoMushrooms.BackgroundColor3 = GuiColor.Base_ 
+	goToWindyButton.Visible = false
+	buttonAutoWindy.TextColor3 = GuiColor.Text_White_
+	textView.TextColor3 = GuiColor.Text_White_
+	goToViciousButton.Visible = false
+	buttonAutoVicious.TextColor3 = GuiColor.Text_White_
+	textView.TextColor3 = GuiColor.Text_White_
+	buttonAutoStickBug.TextColor3 = GuiColor.Text_White_
+	ButtonState.Activation(buttonAutoTracking)
+end
+
+local speedRebut = function()
+	HumanoidState.Speed = 0
+	wait(1)
+	HumanoidState.Speed = HumanoidState.TmpSpeed
+	wait(.2)
+	coroutine.wrap(WRP.applySpeed)()
+end
+
+local humanoidReboot = function()
+	while HumanoidAction.AllStarting do
+		humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
+		humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+		wait(10)
+	end
+end
+	
+local digRebut = function(bool)
+	repeat
+		if AutoFlags.DigBottonDown then
+			AutoFlags.DigBottonDown = false
+			wait(1)
+			AutoFlags.DigBottonDown = true
+			wait(.2)
+			coroutine.wrap(WRP.autoDiging)()
+		end
+		if bool then wait(600) else return end
+	until not HumanoidAction.AllStarting
+end
+
+coroutine.wrap(humanoidReboot)()
+coroutine.wrap(digRebut)(true)
+----------------------------------------------------
+local function imKilled(timeDelay)
 	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
-	if (Vector3.new(spawnPosHumanoid.x, spawnPosHumanoid.y, spawnPosHumanoid.z) -
-		humanoidRootPart.Position).magnitude < 10 then
-		HumanoidState.Speed = 0
-		AutoFlags.DigBottonDown = false	
+	if onSpawn() then
+		print("I'm killed!")
+		coroutine.wrap(Auto.speedRebut)()
 		wait(timeDelay)
-		HumanoidState.Speed = HumanoidState.TmpSpeed
-		SpeedBottonFunction()
-		AutoFlags.DigBottonDown = true
-		AutoDiging()
-		if not HumanoidAction.Pause then
-			GoToFieldAndSplinker()
+		if not checkingStopping() then
+			goToFieldAndSplinker()
 		end
 		wait(.05)
 		return true
@@ -840,1627 +1046,1787 @@ local function checkKilled(timeDelay)
 	return false	
 end
 
-local function trackingFunction()
-
-local function TrackingMonsters()
-	local trackingMonsters_ = 0
-	local trackingMonstersVicious_ = 0
-	for _,v in pairs(game.workspace.NPCBees:GetChildren()) do
-		if string.find(v.Name,"Windy") then
-			trackingMonsters_ = 2
-		end
-	end
-	for _,v in pairs(game.workspace.Monsters:GetChildren()) do
-		if string.find(v.Name,"Windy") then
-			trackingMonsters_ = 2
-		end
-		if string.find(v.Name,"Vici") then
-			trackingMonstersVicious_ = 1
-		end
-		if string.find(v.Name,"Stick Bug") then
-			AutoStickBug.TextColor3 = Color3.new(0.3, 1, 0.3)
-		else
-			AutoStickBug.TextColor3 = Color3.new(1, 1, 1)
-		end
-	end
-	if trackingMonstersVicious_ == 0 then
-		ViciousTPBotton.BackgroundColor3 = Color3.new(1, 1, 1)
-		ViciousTPBotton.Transparency = 1
-		AutoVicious.TextColor3 = Color3.new(1, 1, 1)
-		TextView.TextColor3 = Color3.new(1, 1, 1)
-	elseif trackingMonstersVicious_ == 1 then
-		ViciousTPBotton.BackgroundColor3 = Color3.new(1, 0.3, 0.3)
-		ViciousTPBotton.Transparency = 0.5
-		AutoVicious.TextColor3 = Color3.new(1, 0.3, 0.3)
-		TextView.TextColor3 = Color3.new(1, 0.3, 0.3)
-	end
-	if trackingMonsters_ == 0 then
-		WindyTPBotton.BackgroundColor3 = Color3.new(1, 1, 1)
-		WindyTPBotton.Transparency = 1
-		AutoWindy.TextColor3 = Color3.new(1, 1, 1)
-	elseif trackingMonsters_ == 2 then
-		WindyTPBotton.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-		WindyTPBotton.Transparency = 0.5
-		AutoWindy.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-		TextView.TextColor3 = Color3.new(0.3, 0.3, 0.3)
-	end
-end
-
-local function SearchMushroomCFrame(mushroom)
-for _, k in pairs(mushroom:GetDescendants()) do
-	if k:IsA("BasePart") then
-		ActionFlags.MushroomCFrame = k.CFrame
-		break
-	end
-end
-end
-
-local function SearchMushroomMaxCFrame(mushroom)
-for _, k in pairs(mushroom:GetDescendants()) do
-	if k:IsA("BasePart") then
-		if ActionFlags.MushroomCFrame.Y <
-			k.CFrame.Y then
-			ActionFlags.MushroomCFrame = k.CFrame
-			break
-		end
-	end
-end
-end
-
-local function MushroomDetect()
-local detectClassMushroom_ = 0
-local detectMaxClassMushroom_ = 0
-local detectLvlMushroom_ = 0
-local detectMaxLvlMushroom_ = 0
-for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
-	if string.find(v.Name,"PuffballMushroom") then
-		local descendants_ = v:GetDescendants()
-		for _, descendant in pairs(descendants_) do
-			if descendant.Name == "TextLabel" then
-				if string.find(descendant.Text, "Rare") then
-					detectClassMushroom_ = 2
-				elseif string.find(descendant.Text, "Epic") then
-					detectClassMushroom_ = 3
-				elseif string.find(descendant.Text, "Legendary") then
-					detectClassMushroom_ = 4
-				elseif string.find(descendant.Text, "Mythic") then
-					detectClassMushroom_ = 5
-				else
-					detectClassMushroom_ = 1
-				end
-				if detectMaxClassMushroom_ < detectClassMushroom_ then
-					detectMaxClassMushroom_ = detectClassMushroom_
-					detectMaxLvlMushroom_ = tonumber(string.match(descendant.Text, "%d+"))
-					SearchMushroomCFrame(v)
-				elseif detectMaxClassMushroom_ == detectClassMushroom_ then
-					detectLvlMushroom_ = tonumber(string.match(descendant.Text, "%d+"))
-					if detectMaxLvlMushroom_ < detectLvlMushroom_ then
-						detectMaxLvlMushroom_ = detectLvlMushroom_
-						SearchMushroomCFrame(v)
-					elseif detectMaxLvlMushroom_ == detectLvlMushroom_ then
-						SearchMushroomMaxCFrame(v)
+local function SearchTicket()
+	for _,v in pairs(workspace.Collectibles:GetChildren()) do
+		for _, descendant in pairs(v:GetDescendants()) do
+			if descendant.Name == "FrontDecal" then
+				if	descendant.Texture == "rbxassetid://8277780065" or		-- hardwax
+					descendant.Texture == "rbxassetid://8277778300" or		-- softwax
+					descendant.Texture == "rbxassetid://1674871631" or		-- билет
+					descendant.Texture == "rbxassetid://2504978518" or		-- клей
+					descendant.Texture == "rbxassetid://2542899798" or		-- пыль
+					descendant.Texture == "rbxassetid://2584584968" or		-- ензим
+					descendant.Texture == "rbxassetid://2545746569" or		-- oil_test1
+					descendant.Texture == "rbxassetid://8277901755" or		-- хонейсайкле
+					descendant.Texture == "rbxassetid://8054996680" or		-- кубик2
+					descendant.Texture == "rbxassetid://8055428094" or		-- кубик3
+					descendant.Texture == "rbxassetid://2319943273" or		-- старжели
+					descendant.Texture == "rbxassetid://1471850677" or		-- диамантовоеяйцо
+					descendant.Texture == "rbxassetid://2529092020" or		-- mseed
+					descendant.Texture == "rbxassetid://2495936060" or		-- blueextract
+					descendant.Texture == "rbxassetid://2495935291" or		-- redextract
+					descendant.Texture == "rbxassetid://8277783113" or		-- swirledwax2
+					descendant.Texture == "rbxassetid://8310376170" or		-- turpentine
+					descendant.Texture == "rbxassetid://8277781688" or		-- causticwax
+					descendant.Texture == "rbxassetid://5144657215" or		-- supersmoothie
+					descendant.Texture == "rbxassetid://4935580187" or		-- potion2 purple
+					descendant.Texture == "http://www.roblox.com/asset/?id=3835877932" or	-- tropicaldrink
+					descendant.Texture == "rbxassetid://6087969886" or		-- snowflake2
+					descendant.Texture == "rbxassetid://1471849394" then	-- золотоеяйцо
+					if descendant.Parent.Transparency == 0 then
+						return true, descendant.Parent.CFrame
 					end
 				end
-				ActionFlags.MushroomClass = detectMaxClassMushroom_
-				ActionFlags.MushroomLvl = detectMaxLvlMushroom_
 			end
 		end
 	end
 end
-if detectMaxClassMushroom_ == 0 then
-	MushroomPoint.BackgroundColor3 = GuiColor.Base_
-	if not AutoFlags.MushroomsBottonDown then
-		AutoMushrooms.BackgroundColor3 = GuiColor.Base_ end
-elseif detectMaxClassMushroom_ == 1 then
-	MushroomPoint.BackgroundColor3 = Color3.new(0.5, 0.25, 0.25)
-	if not AutoFlags.MushroomsBottonDown then
-		AutoMushrooms.BackgroundColor3 = Color3.new(0.5, 0.25, 0.25) end
-elseif detectMaxClassMushroom_ == 2 then
-	MushroomPoint.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75)
-	if not AutoFlags.MushroomsBottonDown then
-		AutoMushrooms.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75) end
-elseif detectMaxClassMushroom_ == 3 then
-	MushroomPoint.BackgroundColor3 = Color3.new(1, 1, 0)
-	if not AutoFlags.MushroomsBottonDown then
-		AutoMushrooms.BackgroundColor3 = Color3.new(1, 1, 0) end
-elseif detectMaxClassMushroom_ == 4 then
-	MushroomPoint.BackgroundColor3 = Color3.new(0, 1, 1)
-	if not AutoFlags.MushroomsBottonDown then
-		AutoMushrooms.BackgroundColor3 = Color3.new(0, 1, 1) end
-elseif detectMaxClassMushroom_ == 5 then
-	MushroomPoint.BackgroundColor3 = Color3.new(0.5, 0, 1)
-	if not AutoFlags.MushroomsBottonDown then
-		AutoMushrooms.BackgroundColor3 = Color3.new(0.5, 0, 1) end
-end
-if detectMaxLvlMushroom_ > 0 then
-	MushroomPoint.Text = tostring(detectMaxLvlMushroom_)
-	MushroomPoint.Transparency = 0.5
-	AutoMushrooms.Text = "AMush "..tostring(detectMaxLvlMushroom_)
-else
-	MushroomPoint.Text = "0"
-	MushroomPoint.Transparency = 1
-	AutoMushrooms.Text = "AMush"
-end
-end
 
-	while HumanoidAction.AllStarting do
-		TrackingMonsters()
-		wait(.01)
-		MushroomDetect()
-		wait(.3)
-	end
-end
-coroutine.wrap(trackingFunction)()
-
-local function autoDigRebut()
-	while HumanoidAction.AllStarting do
-		if AutoFlags.DigBottonDown then
-			AutoFlags.DigBottonDown = false
-			wait(.5)
-			AutoFlags.DigBottonDown = true
-			wait(.2)
-			AutoDiging()
+local function SearchTicket2()
+	for _,v in pairs(workspace.Collectibles:GetChildren()) do
+		for _, descendant in pairs(v:GetDescendants()) do
+			if descendant.Name == "FrontDecal" then
+				if descendant.Texture == "rbxassetid://1471882621" or		-- жели-
+					descendant.Texture == "rbxassetid://2060626811" or		-- антпасс-
+					descendant.Texture == "rbxassetid://3080740120" or		-- бобы-
+					descendant.Texture == "rbxassetid://3030569073" or		-- облоко-
+					descendant.Texture == "rbxassetid://2863122826" or		-- конвертор-
+					descendant.Texture == "rbxassetid://1838129169" or		-- конфеты-
+					descendant.Texture == "rbxassetid://3012679515" or		-- какос-
+					descendant.Texture == "rbxassetid://1952682401" or		-- семечки-
+					descendant.Texture == "rbxassetid://1952740625" or		-- клубника-
+					descendant.Texture == "rbxassetid://1952796032" or		-- ананас-
+					descendant.Texture == "rbxassetid://2028453802" then	-- черника-
+					if descendant.Parent.Transparency == 0 then
+						return true, descendant.Parent.CFrame
+					end
+				end
+			end
 		end
-		wait(600)
 	end
 end
-coroutine.wrap(autoDigRebut)()
 
-local function humanoidReboot()
-	while HumanoidAction.AllStarting do
-		humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
-		humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-		wait(10)
+local function farmKillFunction()
+	local function AutoTicketFarming()
+		while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+			wait(4)
+		end
+		local boolTicket_, cFrameTicket_ = SearchTicket()
+		if boolTicket_ then
+			HumanoidAction.Pause = true
+			while true do	
+				if boolTicket_ and AutoFlags.TicketBottonDown then
+					humanoidRootPart.CFrame = CFrame.new(cFrameTicket_.X,
+						cFrameTicket_.Y, cFrameTicket_.Z)
+					wait(.1)
+					wait(.1)
+					wait(.1)
+				else
+					goToField()
+					HumanoidAction.Pause = false
+					return
+				end
+				boolTicket_, cFrameTicket_ = SearchTicket()
+			end
+		end
 	end
-end
-coroutine.wrap(humanoidReboot)()
 
-local FarmKillFunction = coroutine.wrap(function()
-
-local function Collect_Dist40ToPos10sec(position)
-	TimeLutCollection()
-	local positionPoint_ = position
-	wait(.2)
-	for count = 1, 1000 do
-		for _,v in pairs(workspace.Collectibles:GetChildren()) do
-		if (v.Position - positionPoint_).magnitude <= 40 then
-		if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
-		if AutoFlags.MushroomsBottonDown then
-			if lutCollection then
-				humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
-				wait(.25)
+	local function Collect_Dist40ToPos10sec(position)
+		TimeLutCollection()
+		local positionPoint_ = position
+		wait(.2)
+		for count = 1, 1000 do
+			for _,v in pairs(workspace.Collectibles:GetChildren()) do	-- перебираем собираемые элементы
+			if (v.Position - positionPoint_).magnitude <= 40 then		-- если растояние меньше, собираем
+																		-- токен находится на уровне
+			if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
+			if AutoFlags.MushroomsBottonDown then
+				if lutCollection then
+					humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
+					wait(.25)
+				else
+					return
+				end
 			else
+				break
+			end
+			end
+			end
+			end
+			wait(.03)
+		end
+	end
+
+	local function AddWahhh(mushroom_)
+		for _, descendant in pairs(mushroom_:GetDescendants()) do
+			if descendant.Name == "TextLabel" then
+				descendant.Text = descendant.Text.."     Wahhh"
 				return
 			end
-		else
-			break
-		end
-		end
-		end
-		end
-		wait(.03)
-	end
-end
-
-local function AddWahhh(mushroom_)
-	for _, descendant in pairs(mushroom_:GetDescendants()) do
-		if descendant.Name == "TextLabel" then
-			descendant.Text = descendant.Text.."     Wahhh"
-			return
 		end
 	end
+
+	local function SubWahhh(mushroom_)
+		for _, descendant in pairs(mushroom_:GetDescendants()) do
+			if descendant.Name == "TextLabel" then
+				descendant.Text = string.gsub(descendant.Text, "     Wahhh", "")
+				return true
+			end
+		end
+		return false
+	end
+
+	local function SearchWahhh()
+		if ActionFlags.MushroomLvl > 0 then
+			for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
+				if string.find(v.Name,"PuffballMushroom") then			-- ищем грибы
+					for _, descendant in pairs(v:GetDescendants()) do
+						if descendant.Name == "TextLabel" then			-- ищем уровень гриба
+						if string.find(descendant.Text, "     Wahhh") then
+							if (ActionFlags.MushroomClass == 1) or
+								(ActionFlags.MushroomClass == 2 and string.find(descendant.Text, "Rare")) or
+								(ActionFlags.MushroomClass == 3 and string.find(descendant.Text, "Epic")) or
+								(ActionFlags.MushroomClass == 4 and string.find(descendant.Text, "Legendary")) or
+								(ActionFlags.MushroomClass == 5 and string.find(descendant.Text, "Mythic")) then
+								if (ActionFlags.MushroomLvl - 3) < tonumber(string.match(descendant.Text, "%d+")) then
+									return true
+								end
+							end
+						end
+						end
+					end
+				end
+			end
+			return false
+		end
+	end
+
+	local function AutoFarmMushrooms()
+	coroutine.wrap(WRP.remoteQuest)()
+	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+		wait(4)
+	end
+	HumanoidAction.Pause = true
+	local positionMushroom_ = Vector3.new(999, 999, 999)
+	while AutoFlags.MushroomsBottonDown and seeMushroomButton.Visible do
+		local mushroom_ = MushroomSearch()
+		timeLutCollection = 3 + ActionFlags.MushroomLvl / 3 + ActionFlags.MushroomClass * 2
+		if mushroom_ == nil then break end
+		AddWahhh(mushroom_)
+		
+		for _, descendant in pairs(mushroom_:GetDescendants()) do
+			if descendant:IsA("BasePart") then
+				if (positionMushroom_ - descendant.Position).magnitude > 10 then
+					positionMushroom_ = descendant.Position
+					humanoidRootPart.CFrame = descendant.CFrame
+					splinkerInstalling()
+					--print("switchMask_positionMushroom_",tostring(positionMushroom_))
+					switchMask(positionMushroom_)
+				else
+					positionMushroom_ = descendant.Position
+					humanoidRootPart.CFrame = descendant.CFrame
+					wait(.2)
+				end
+				
+				repeat
+				for count = 1, 20 do
+					if not AutoFlags.MushroomsBottonDown then HumanoidAction.Pause = false return end
+					humanoid:MoveTo(Vector3.new(positionMushroom_.x + math.random(-20, 20),
+						humanoidRootPart.Position.y, positionMushroom_.z + math.random(-20, 20)), nil)
+					if (positionMushroom_.y - humanoidRootPart.Position.y) > 7 or
+						(positionMushroom_ - humanoidRootPart.Position).magnitude > 40 then 
+						humanoidRootPart.CFrame = CFrame.new(positionMushroom_)
+					end
+					imKilled(5)-------------------
+					BackpackUnloadingMushroom(positionMushroom_)
+				end
+				until not SearchWahhh()
+				
+				if not SubWahhh(mushroom_) then
+					wait(.05)
+					Collect_Dist40ToPos10sec(positionMushroom_)
+				end
+				break
+			end
+		end
+	end
+	goToFieldAndSplinker()
+	switchMask()
+	HumanoidAction.Pause = false
+	end
+
+	local function AutoKillVicious()
+		if goToViciousButton.Visible then
+			while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+				wait(5)
+			end
+			HumanoidAction.Pause = true
+			print("AutoKillVicious Start")
+			switchMask(3)
+			wait()
+			for _,v in pairs(game.workspace.Monsters:GetChildren()) do
+			if string.find(v.Name,"Vici") or string.find(v.Name,"Gifted") then
+				humanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
+				wait(.3)
+				while true do
+					local human = v:FindFirstChildOfClass("Humanoid")
+					if human then
+						humanoidRootPart.CFrame = CFrame.new(v.HumanoidRootPart.CFrame.X,
+							v.HumanoidRootPart.CFrame.Y + 20,
+							v.HumanoidRootPart.CFrame.Z)
+						wait(.01)
+						if not AutoFlags.ViciousBottonDown then break end
+					else
+						break
+					end
+				end
+				break
+			end
+			end
+			print("AutoKillVicious Stop")
+			switchMask()
+			wait(0.2)
+			goToFieldOrSpawn()
+			HumanoidAction.Pause = false
+		end
+	end
+
+	local function AutoKillWindy()
+		if goToWindyButton.Visible then
+			while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+				wait(4)
+			end
+			HumanoidAction.Pause = true
+			print("AutoKillWindy Start")
+			switchMask(3)
+			wait(.1)
+			for _,v in pairs(game.workspace.NPCBees:GetChildren()) do
+				if string.find(v.Name,"Windy") then
+					--game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,5,0)
+					humanoidRootPart.CFrame = v.CFrame * CFrame.new(0,5,0)
+				end
+			end
+			wait(.3)
+			for _,r in pairs(game.workspace.Monsters:GetChildren()) do
+			if string.find(r.Name,"Windy") then
+				--game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
+				humanoidRootPart.CFrame = r.HumanoidRootPart.CFrame * CFrame.new(0,30,0)
+				while true do
+					local human = r:FindFirstChildOfClass("Humanoid")
+					if human then
+						humanoidRootPart.CFrame = CFrame.new(r.HumanoidRootPart.CFrame.X,
+							r.HumanoidRootPart.CFrame.Y + 30,
+							r.HumanoidRootPart.CFrame.Z)
+						wait(.01)
+						if not AutoFlags.WindyBottonDown then break end
+					else
+						break
+					end
+					-- Собираем токены сбора
+					if humanoid.Health > 40 then
+					for _,v in pairs(workspace.Collectibles:GetChildren()) do
+					if (v.Position - humanoidRootPart.Position).magnitude < 150 then
+						local descendants_ = v:GetDescendants()
+						for index, descendant in pairs(descendants_) do
+							if descendant.Name == "FrontDecal" then
+								if tostring(descendant.Texture) == "rbxassetid://1629547638" then
+									humanoidRootPart.CFrame = CFrame.new(descendant.Parent.Position)
+									wait(.15)
+								end
+							end
+						end
+					end
+					end
+					end
+				end
+				wait()
+			end
+			end
+			print("AutoKillWindy Stop")
+			switchMask()
+			wait(0.2)
+			goToFieldOrSpawn()
+			HumanoidAction.Pause = false
+		end
+		--[[for _,v in pairs(workspace.Collectibles:GetChildren()) do			-- перебираем собираемые элементы
+			if (v.Position - humanoidRootPart.Position).magnitude <= 30 then	-- если растояние меньше, собираем
+																				-- токен находится на уровне
+				if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
+					if AutoFlags.MobsBottonDown then
+						humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
+						wait(.2)
+					else
+						break
+					end
+				end
+			end
+		end]]
+	end
+
+	local function AutoKillStickBug()
+		if buttonAutoStickBug.TextColor3 == GuiColor.Green_ then
+			while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+				wait(4)
+			end
+			HumanoidAction.Pause = true
+			print("AutoKillStickBug Start")
+			switchMask(3)
+			workspace.Gravity = 80
+			wait(.1)
+			for _,r in pairs(game.workspace.Monsters:GetChildren()) do
+				if string.find(r.Name,"Stick Bug") then
+					while true do
+						local human = r:FindFirstChildOfClass("Humanoid")
+						if human then
+							humanoidRootPart.CFrame = CFrame.new(r.HumanoidRootPart.CFrame.X,
+								r.HumanoidRootPart.CFrame.Y + 40,
+								r.HumanoidRootPart.CFrame.Z + 20)
+							wait(.01)
+							if not AutoFlags.StickBugBottonDown then break end
+						else
+							break
+						end
+					end
+					break
+				end
+			end
+			wait(0.1)
+			workspace.Gravity = 170
+			print("AutoKillStickBug Stop")
+			switchMask()
+			goToFieldOrSpawn()
+			HumanoidAction.Pause = false
+		end
+	end
+
+	local function AutoKillMondo()
+		for _,v in pairs(game.workspace.Monsters:GetChildren()) do
+			if string.find(v.Name,"Mondo") then
+				while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+					wait(4)
+				end
+				HumanoidAction.Pause = true
+				print("AutoKillMondo Start")
+				switchMask(3)
+				local basePoint = CFrame.new(20,177,-165)
+				humanoidRootPart.CFrame = basePoint
+				wait(3)
+				local safeDistanceToMondo = 40
+				local relativePosition = 0
+				while true do
+					local human = v:FindFirstChildOfClass("Humanoid")
+					if human and AutoFlags.MondoBottonDown then
+						relativePosition = safeDistanceToMondo / ((v.HumanoidRootPart.CFrame.X-basePoint.X)^2+(v.HumanoidRootPart.CFrame.Z-basePoint.Z)^2)^0.5
+						if relativePosition < 1 then
+							humanoid:MoveTo(Vector3.new(v.HumanoidRootPart.CFrame.X+(basePoint.X-v.HumanoidRootPart.CFrame.X)*relativePosition,
+								humanoidRootPart.Position.y, v.HumanoidRootPart.CFrame.Z+(basePoint.Z-v.HumanoidRootPart.CFrame.Z)*relativePosition))
+						else
+							humanoid:MoveTo(Vector3.new(basePoint.x, humanoidRootPart.Position.y, basePoint.z))
+						end
+						wait(.04)
+						if imKilled(30) then humanoidRootPart.CFrame = basePoint end
+					else
+						break
+					end
+					wait(.1)
+				end
+				print("AutoKillMondo Stop")
+				switchMask()
+				wait(0.1)
+				goToFieldOrSpawn()
+				HumanoidAction.Pause = false
+				break
+			end
+		end
+	end
+
+	while HumanoidAction.AllStarting do
+		while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+			wait(2)
+		end
+		wait(.1)---------------Mondo
+		if AutoFlags.MondoBottonDown then AutoKillMondo() end
+		wait(.1)---------------StickBug
+		if AutoFlags.StickBugBottonDown then AutoKillStickBug() end
+		wait(.1)---------------Mushrooms
+		if AutoFlags.MushroomsBottonDown and seeMushroomButton.Visible then
+			AutoFarmMushrooms()
+		end
+		wait(.1)---------------Ticket
+		if AutoFlags.TicketBottonDown then
+			AutoTicketFarming()
+		end
+		wait(.1)---------------Windy
+		if AutoFlags.WindyBottonDown then
+			while goToWindyButton.Visible do
+				if not AutoFlags.WindyBottonDown then break end
+				AutoKillWindy()
+				wait(.01)
+			end
+		end
+		wait(.1)---------------Vicious
+		if AutoFlags.ViciousBottonDown then AutoKillVicious() end
+		wait(2)
+	end
+end
+coroutine.wrap(farmKillFunction)()
+
+--========================================--
+local function farmBottonDown()
+
+local function imOnField()
+while HumanoidAction.Farm do
+	wait(4)
+	repeat
+		wait(1)
+		if not HumanoidAction.Farm then return end
+	until not checkingStopping()
+	
+	imKilled(20)
+	if (humanoidRootPart.Position.y - fieldPosition.y) < 1 then
+		goToField()
+		print("Fell down!")
+	end
+	if (BordersField.min_X - 30) > humanoidRootPart.Position.x or
+		humanoidRootPart.Position.x > (BordersField.max_X + 30) or
+		(BordersField.min_Z - 30) > humanoidRootPart.Position.z or
+		humanoidRootPart.Position.z > (BordersField.max_Z + 30) then
+		goToField()
+		print("Run away!")
+	end
+end
 end
 
-local function SubWahhh(mushroom_)
-	for _, descendant in pairs(mushroom_:GetDescendants()) do
-		if descendant.Name == "TextLabel" then
-			descendant.Text = string.gsub(descendant.Text, "     Wahhh", "")
+local function onField(x,y,z)
+	if (x > BordersField.min_X) and (x < BordersField.max_X) and
+		(z > BordersField.min_Z) and (z < BordersField.max_Z) then
+		if ((y > fieldPosition.y - 3) and (y < fieldPosition.y + 5)) then
 			return true
 		end
 	end
 	return false
 end
 
-local function SearchWahhh()
-if ActionFlags.MushroomLvl > 0 then
-	for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
-		if string.find(v.Name,"PuffballMushroom") then
-			for _, descendant in pairs(v:GetDescendants()) do
-				if descendant.Name == "TextLabel" then
-				if string.find(descendant.Text, "     Wahhh") then
-					if (ActionFlags.MushroomClass == 1) or
-						(ActionFlags.MushroomClass == 2 and string.find(descendant.Text, "Rare")) or
-						(ActionFlags.MushroomClass == 3 and string.find(descendant.Text, "Epic")) or
-						(ActionFlags.MushroomClass == 4 and string.find(descendant.Text, "Legendary")) or
-						(ActionFlags.MushroomClass == 5 and string.find(descendant.Text, "Mythic")) then
-						if (ActionFlags.MushroomLvl - 3) < tonumber(string.match(descendant.Text, "%d+")) then
-							return true
-						end
-					end
+--[[local function UpdateChecking()
+if tmpField_ ~= textView.Text then
+	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
+	humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+	fieldCFrame = CFrame.new(workspace.FlowerZones[textView.Text].Position)	-- поле CFrame
+	fieldPosition = workspace.FlowerZones[textView.Text].Position			-- поле Position
+	sizeField = workspace.FlowerZones[textView.Text].Size					-- размер поля
+	BordersField.min_X = fieldPosition.x - (sizeField.x / 2) + BordersField.distanceToBoard
+	BordersField.max_X = fieldPosition.x + (sizeField.x / 2) - BordersField.distanceToBoard
+	BordersField.min_Z = fieldPosition.z - (sizeField.z / 2) + BordersField.distanceToBoard
+	BordersField.max_Z = fieldPosition.z + (sizeField.z / 2) - BordersField.distanceToBoard
+	tmpField_ = textView.Text
+end
+end]]
+
+--[[local checkingAndMove = function(object)
+	if onField(object.Position.x,object.Position.y,object.Position.z) then
+		if not HumanoidAction.Farm or HumanoidAction.Pause then return false end	
+		moveToToken(Vector3.new(object.Position.x, humanoidRootPart.Position.y, object.Position.z))
+		backpackBalloonCheckingUnloading()		
+	end
+	return true
+end]]
+
+local function farmFieldToToken()
+	if not checkingStopping() then goToFieldAndSplinker() end
+	--local tmpField_ = ""
+	coroutine.wrap(imOnField)()
+	repeat
+		while checkingStopping() do
+			wait(1)
+			if not HumanoidAction.Farm then return end
+		end
+		-------
+		humanoid:MoveTo(Vector3.new(fieldPosition.x, humanoidRootPart.Position.y, fieldPosition.z), nil)	-- идём в центр
+		wait(.01)
+		-----------------------------------------Token-----------------------------------------
+		for _,v in pairs(workspace.Collectibles:GetChildren()) do
+			--if not checkingAndMove(v) then break end
+			if onField(v.Position.x,v.Position.y,v.Position.z) then
+				if not HumanoidAction.Farm or HumanoidAction.Pause then break end	
+				moveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
+				backpackBalloonCheckingUnloading()		
+			end
+		end
+		-----------------------------------------Bubble-----------------------------------------
+		--[[for _,v in pairs(workspace.Particles:GetChildren()) do
+			if string.find(v.Name,"Bubble") then
+				if onField(v.Position.x,v.Position.y,v.Position.z) then
+					if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+					moveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
+					backpackBalloonCheckingUnloading()	
 				end
+			end
+		end]]
+		-----------------------------------------Flame-----------------------------------------
+		for _,v in pairs(workspace.PlayerFlames:GetChildren()) do
+			if onField(v.Position.x,v.Position.y,v.Position.z) then
+				if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+				moveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
+				backpackBalloonCheckingUnloading()	
+			end
+		end		
+	until not HumanoidAction.Farm
+	--tmpField_ = ""
+end
+
+local function goToSpace()
+if not HumanoidAction.Pause then goToField() end
+wait(.5)
+local tmpField_ = ""
+coroutine.wrap(imOnField)()
+repeat
+	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+		wait(1)
+		if not HumanoidAction.Farm then return end
+	end
+	--UpdateChecking()
+	-----------------------------------------
+	humanoid:MoveTo(Vector3.new(fieldPosition.x, humanoidRootPart.Position.y, fieldPosition.z), nil)	-- идём в центр
+	wait(.01)
+		--for reiterate = 1, 2 do
+	-----------------------------------------Token-----------------------------------------
+	for i = 1, 2 do
+	for k,v in pairs(workspace.Collectibles:GetChildren()) do		-- перебираем собираемые элементы
+	if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
+	if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then			-- токен находится на уровне
+		if not HumanoidAction.Farm or HumanoidAction.Pause then break end	
+		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)	-- собираем
+		wait(.25)--.25
+		backpackBalloonCheckingUnloading()		
+	end
+	end
+	end
+	end
+	-----------------------------------------Bubble-----------------------------------------
+	--[[for i = 1, 1 do
+	for k,v in pairs(workspace.Particles:GetChildren()) do		-- перебираем собираемые элементы
+	if string.find(v.Name,"Bubble") then
+	if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
+	if ((v.Position.y > fieldPosition.y - 5) and (v.Position.y < fieldPosition.y + 5)) then		-- токен находится на уровне
+		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)	-- собираем
+		wait(.2)--.2
+		backpackBalloonCheckingUnloading()
+	end
+	end
+	end
+	end
+	end]]
+	-----------------------------------------Flame-----------------------------------------
+	for i = 1, 1 do
+	for k,v in pairs(workspace.PlayerFlames:GetChildren()) do		-- перебираем собираемые элементы
+	if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
+	if ((v.Position.y > fieldPosition.y - 5) and (v.Position.y < fieldPosition.y + 5)) then		-- токен находится на уровне
+		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)	-- собираем
+		wait(.2)--.2
+		backpackBalloonCheckingUnloading()
+	end
+	end
+	end
+	end
+		--if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+		--end
+until HumanoidAction.Farm == false
+tmpField_ = ""
+end
+
+	if HumanoidAction.FarmToSp then
+		coroutine.wrap(goToSpace)()
+	else
+		coroutine.wrap(farmFieldToToken)()
+	end
+end
+
+local function toggleKeyTX(input, gameProcessed)
+	if not HumanoidAction.AllStarting then return end
+	if input.KeyCode == Enum.KeyCode.T then
+		if HumanoidAction.Farm then
+			buttonFarm.BackgroundColor3 = GuiColor.Base_
+			HumanoidAction.Farm = false
+			buttonFarmToSp.BackgroundColor3 = GuiColor.Base_
+			HumanoidAction.FarmToSp = false
+		else
+			buttonFarm.BackgroundColor3 = GuiColor.On_Color_G
+			HumanoidAction.Farm = true
+			farmBottonDown()
+		end
+	end
+	if input.KeyCode == Enum.KeyCode.X then	-- LeftAlt
+		if dark_Frame.Transparency == 1 then
+			dark_Frame.Transparency = 0
+			start_Frame.Visible = false
+			dark_Frame.Size = UDim2.new(1, 0, 1.3, 0)
+		else
+			dark_Frame.Transparency = 1
+			start_Frame.Visible = true
+			dark_Frame.Size = UDim2.new(0, 1, 0, 1)
+		end
+	end
+	if input.KeyCode == Enum.KeyCode.F8 then
+		start_Frame.Visible = not start_Frame.Visible
+	end
+end
+ConnectionKey.ConnectionTX = game:GetService("UserInputService").InputEnded:Connect(toggleKeyTX)
+
+spawn(function()------------------main_Frame-------------------
+	local buttonDestroy = CreateButton({Size=UDim2.new(0, 25, 0, 25),Position=UDim2.new(0, 190, 0, 2),
+		Text="X",Name="buttonDestroy",Parent=main_Frame,TextSize=18,BackgroundColor3=GuiColor.Red_})
+	local buttonTP = CreateButton({Size=UDim2.new(0, 43, 0, 24),Position=UDim2.new(0, 40, 0, 34),
+		Text="Seg",Name="buttonTP",Parent=main_Frame,TextSize = 14})
+	local buttonHomePoint = CreateButton({Size=UDim2.new(0, 25, 0, 24),Position=UDim2.new(0, 190, 0, 34),
+		Text="(0)",Name="buttonHomePoint",Parent=main_Frame,TextSize = 14})
+
+------------------Закрытие xxxl_GUI------------------
+	buttonDestroy.MouseButton1Down:Connect(function()
+		AutoFlags.TrackingBottonDown=false
+		AutoFlags.DigBottonDown = false
+		AutoFlags.ViciousBottonDown = false
+		AutoFlags.WindyBottonDown = false
+		AutoFlags.StickBugBottonDown = false
+		AutoFlags.MondoBottonDown = false
+		AutoFlags.DispenserBottonDown = false
+		AutoFlags.BasicEggBottonDown = false
+		AutoFlags.BoostBottonDown = false
+		AutoFlags.TornadoBottonDown = false
+		AutoFlags.TicketBottonDown = false
+		AutoFlags.MushroomsBottonDown = false
+		HumanoidState.Speed = 0
+		ActionFlags.BalloonUnloading = false
+		ActionFlags.StateBalloonBotton = 0
+		BordersField.distanceToBoard = 5
+		HumanoidAction.Farm = false
+		HumanoidAction.Pause = false
+		ConnectionKey.ConnectionT:Disconnect()
+		ConnectionKey.ConnectionCV:Disconnect()
+		ConnectionKey.ConnectionTX:Disconnect()
+		ConnectionKey.VirtualUserActive:CaptureController()
+		HumanoidAction.AllStarting = false
+		wait(1)
+		HumanoidAction.AllStarting = nil
+		XXXLGui:Destroy()
+		wait(1)
+		ConnectionKey.VirtualUserActive:CaptureController()
+		return
+	end)
+	
+	buttonTPTop.MouseButton1Down:Connect(function()
+		humanoidRootPart.CFrame = CFrame.new(-20, 232, -120)
+	end)
+	
+	buttonTPPep.MouseButton1Down:Connect(function()
+		humanoidRootPart.CFrame = CFrame.new(-486, 124, 517)
+	end)
+	
+	goToViciousButton.MouseButton1Down:Connect(function() goToMonster(Zone.Monsters_,Bosses.Vicious_) end)
+	
+	goToWindyButton.MouseButton1Down:Connect(function()
+		if	checkMonster(Zone.NPCBees_,Bosses.Windy_) then
+			goToMonster(Zone.NPCBees_,Bosses.Windy_)
+		else
+			goToMonster(Zone.Monsters_,Bosses.Windy_)
+		end
+	end)
+	
+	seeMushroomButton.MouseButton1Down:Connect(function() GoToMushroom() end)
+	buttonMenu.MouseButton1Down:Connect(function() hideMenu() end)
+	buttonTP.MouseButton1Down:Connect(function() goToField() end)
+	
+	buttonFarm.MouseButton1Down:Connect(function()
+		if not HumanoidAction.FarmToSp then
+			if HumanoidAction.Farm then
+				ButtonState.Activation(buttonFarm)
+				HumanoidAction.Farm = false
+			else
+				ButtonState.On(buttonFarm)
+				HumanoidAction.Farm = true
+				farmBottonDown()
+			end
+		end
+	end)
+
+	buttonFarmToSp.MouseButton1Down:Connect(function()
+		if HumanoidAction.FarmToSp then
+			ButtonState.Activation(buttonFarmToSp)
+			HumanoidAction.FarmToSp = false
+			HumanoidAction.Farm = false
+		else
+			if not HumanoidAction.Farm then
+				ButtonState.On(buttonFarmToSp)
+				HumanoidAction.FarmToSp = true
+				HumanoidAction.Farm = true
+				farmBottonDown()
+			end
+		end
+	end)
+
+	buttonHomePoint.MouseButton1Down:Connect(function() goToSpawn()	end)
+end)
+
+spawn(function()------------------menu_Frame-------------------
+	ButtonState.Forms(MenuSet,1,1,1)
+	local buttonField = CreateButton({Size=ButtonState.Size(MenuSet),Position=ButtonState.Position(MenuSet),
+		Text="Field",Name="buttonField",Parent=menu_Frame,TextSize = 14})
+	ButtonState.Forms(MenuSet,2,1,1)
+	local buttonActions = CreateButton({Size=ButtonState.Size(MenuSet),Position=ButtonState.Position(MenuSet),
+		Text="Actions",Name="buttonActions",Parent=menu_Frame,TextSize = 14})
+	ButtonState.Forms(MenuSet,3,1,1)
+	local buttonSettings = CreateButton({Size=ButtonState.Size(MenuSet),Position=ButtonState.Position(MenuSet),
+		Text="Settings",Name="buttonSettings",Parent=menu_Frame,TextSize = 14})
+
+	local function displayFrame(button, frame)---+++
+		local function hideFrames()
+			for _,k in pairs(menu_Frame:GetChildren()) do
+				if	k:IsA("Frame") then
+					k.Visible = false
+				elseif k:IsA("TextButton") then
+					k.BackgroundColor3 = GuiColor.Base_
 				end
 			end
 		end
-	end
-	return false
-end
-end
-
-local function AutoFarmMushrooms()
-RemoteQuest()
-while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-	wait(4)
-end
-HumanoidAction.Pause = true
-local positionMushroom_ = Vector3.new(999, 999, 999)
-while AutoFlags.MushroomsBottonDown and MushroomPoint.Transparency == 0.5 do
-	local mushroom_ = MushroomSearch()
-	timeLutCollection = 3 + ActionFlags.MushroomLvl / 3 + ActionFlags.MushroomClass * 2
-	if mushroom_ == nil then break end
-	AddWahhh(mushroom_)
 	
-	for _, descendant in pairs(mushroom_:GetDescendants()) do
-		if descendant:IsA("BasePart") then
-			if (positionMushroom_ - descendant.Position).magnitude > 10 then
-				positionMushroom_ = descendant.Position
-				humanoidRootPart.CFrame = descendant.CFrame
-				SplinkerInstalling()
-				MaskEquiping(positionMushroom_)
+		if	frame.Visible then
+			frame.Visible = false
+			button.BackgroundColor3 = GuiColor.Base_
+		else
+			hideFrames()
+			frame.Visible = true
+			button.BackgroundColor3 = GuiColor.On_Color_B
+		end
+	end
+
+	buttonField.MouseButton1Down:Connect(function()displayFrame(buttonField,field_Frame)end)
+	buttonActions.MouseButton1Down:Connect(function()displayFrame(buttonActions,actions_Frame)end)
+	buttonSettings.MouseButton1Down:Connect(function()displayFrame(buttonSettings,settings_Frame)end)
+
+	local function toggleVisibleSettingsField_Frame(input, gameProcessed)
+		if not HumanoidAction.AllStarting then return end
+		if input.KeyCode == Enum.KeyCode.C then
+			if not field_Frame.Visible then
+				displayFrame(buttonField,field_Frame)
+				hideMenu(true)
 			else
-				positionMushroom_ = descendant.Position
-				humanoidRootPart.CFrame = descendant.CFrame
+				hideMenu()
+			end
+		end
+		if input.KeyCode == Enum.KeyCode.V then
+			if not settings_Frame.Visible then
+				displayFrame(buttonSettings,settings_Frame)
+				hideMenu(true)
+			else
+				hideMenu()
+			end
+		end
+	end
+	ConnectionKey.ConnectionCV = game:GetService("UserInputService").InputEnded:Connect(toggleVisibleSettingsField_Frame)
+end)
+
+spawn(function()------------------field_Frame------------------
+	ButtonState.Forms(FieldButtonSet,1,1,1)
+	local buttonSunflower = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Sunflower Field",Name="buttonSunflower",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,2,1,1)
+	local buttonDandelion = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Dandelion Field",Name="buttonDandelion",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,3,1,1)
+	local buttonMushroom = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Mushroom Field",Name="buttonMushroom",Parent=field_Frame,TextColor3=GuiColor.Red_})
+	ButtonState.Forms(FieldButtonSet,4,1,1)
+	local buttonBlue = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Blue Flower Field",Name="buttonBlue",Parent=field_Frame,TextColor3=GuiColor.Blue_})
+	ButtonState.Forms(FieldButtonSet,5,1,1)
+	local buttonClover = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Clover Field",Name="buttonClover",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,6,1,2)
+	local buttonSpider = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Spider Field",Name="buttonSpider",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,7,1,2)
+	local buttonStrawBerry = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Strawberry Field",Name="buttonStrawBerry",Parent=field_Frame,TextColor3=GuiColor.Red_})
+	ButtonState.Forms(FieldButtonSet,8,1,2)
+	local buttonBamBoo = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Bamboo Field",Name="buttonBamBoo",Parent=field_Frame,TextColor3=GuiColor.Blue_})
+	ButtonState.Forms(FieldButtonSet,9,1,2)
+	local buttonPineapple = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Pineapple Patch",Name="buttonPineapple",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,10,1,2)
+	local buttonStump = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Stump Field",Name="buttonStump",Parent=field_Frame,TextColor3=GuiColor.Blue_})
+
+	ButtonState.Forms(FieldButtonSet,1,2,1)
+	local buttonRose = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Rose Field",Name="buttonRose",Parent=field_Frame,TextColor3=GuiColor.Red_})
+	ButtonState.Forms(FieldButtonSet,2,2,1)
+	local buttonPineTree = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Pine Tree Forest",Name="buttonPineTree",Parent=field_Frame,TextColor3=GuiColor.Blue_})
+	ButtonState.Forms(FieldButtonSet,3,2,1)
+	local buttonCactus = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Cactus Field",Name="buttonCactus",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,4,2,1)
+	local buttonPumpkin = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Pumpkin Patch",Name="buttonPumpkin",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,5,2,1)
+	local buttonMountainTop = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Mountain Top Field",Name="buttonMountainTop",Parent=field_Frame,TextSize = 11})
+	ButtonState.Forms(FieldButtonSet,6,2,2)
+	local buttonCoconut = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Coconut Field",Name="buttonCoconut",Parent=field_Frame})
+	ButtonState.Forms(FieldButtonSet,7,2,2)
+	local buttonPepper = CreateButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
+		Text="Pepper Patch",Name="buttonPepper",Parent=field_Frame,TextColor3=GuiColor.Red_})
+
+	local function segToField(field)
+		textView.Text = field
+		goToField()
+		setBordersField(BordersField.distanceToBoard)
+	end
+
+	buttonSunflower.MouseButton1Down:Connect(function()segToField("Sunflower Field")end)
+	buttonDandelion.MouseButton1Down:Connect(function()segToField("Dandelion Field")end)
+	buttonMushroom.MouseButton1Down:Connect(function()segToField("Mushroom Field")end)
+	buttonBlue.MouseButton1Down:Connect(function()segToField("Blue Flower Field")end)
+	buttonClover.MouseButton1Down:Connect(function()segToField("Clover Field")end)
+	buttonSpider.MouseButton1Down:Connect(function()segToField("Spider Field")end)
+	buttonStrawBerry.MouseButton1Down:Connect(function()segToField("Strawberry Field")end)
+	buttonBamBoo.MouseButton1Down:Connect(function()segToField("Bamboo Field")end)
+	buttonPineapple.MouseButton1Down:Connect(function()segToField("Pineapple Patch")end)
+	buttonStump.MouseButton1Down:Connect(function()segToField("Stump Field")end)
+	buttonRose.MouseButton1Down:Connect(function()segToField("Rose Field")end)
+	buttonPineTree.MouseButton1Down:Connect(function()segToField("Pine Tree Forest")end)
+	buttonCactus.MouseButton1Down:Connect(function()segToField("Cactus Field")end)
+	buttonPumpkin.MouseButton1Down:Connect(function()segToField("Pumpkin Patch")end)
+	buttonMountainTop.MouseButton1Down:Connect(function()segToField("Mountain Top Field")end)
+	buttonCoconut.MouseButton1Down:Connect(function()segToField("Coconut Field")end)
+	buttonPepper.MouseButton1Down:Connect(function()segToField("Pepper Patch")end)
+end)
+
+spawn(function()------------------actions_Frame----------------
+	local xyz = CFrame.new(0, 0, 0)
+	ButtonState.Forms(ButtonSet,1,1,1)
+	local buttonTestXYZ = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Position XYZ",Name="buttonTestXYZ",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,2,1,1)
+	local textTestX = CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
+		MultiLine = true,TextWrapped = true,ClearTextOnFocus = false,TextEditable = false,
+		BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
+		Text = "X",Name="textTestX",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,3,1,1)
+	local textTestY = CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
+		MultiLine = true,TextWrapped = true,ClearTextOnFocus = false,TextEditable = false,
+		BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
+		Text = "Y",Name="textTestY",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,4,1,1)
+	local textTestZ = CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
+		MultiLine = true,TextWrapped = true,ClearTextOnFocus = false,TextEditable = false,
+		BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
+		Text = "Z",Name="textTestZ",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,5,1,1)
+	local buttonTPToXYZ = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Seg To",Name="buttonTPToXYZ",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,6,1,1)
+	local textKey = CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
+		MultiLine = true,TextWrapped = false,ClearTextOnFocus = false,TextEditable = false,
+		BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
+		Text = "F8, X, C, V, T.",Name="textKey",Parent=actions_Frame})
+
+	ButtonState.Forms(ButtonSet,1,2,1)
+	local buttonTPMenuLoad = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="TPMenu",Name="buttonTPMenuLoad",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,2,2,1)
+	local buttonStickers = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Stickers",Name="buttonStickers",Parent=actions_Frame})
+		
+	ButtonState.Forms(ButtonSet,3,2,2)
+	local buttonFieldDeccosDel = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="DecosDel",Name="buttonFieldDeccosDel",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,4,2,2)
+	local buttonCDestroy = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="CDestroy",Name="buttonCDestroy",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,5,2,3)
+	local buttonSkan = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Skan",Name="buttonSkan",Parent=actions_Frame})
+		
+	ButtonState.Forms(ButtonSet,1,3,1)
+	local buttonQuest = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Quest",Name="buttonQuest",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,2,3,1)
+	local buttonStQuest = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="StQuest",Name="buttonStQuest",Parent=actions_Frame})
+
+	ButtonState.Forms(ButtonSet,3,3,2)
+	local buttonPetalWand = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Petal Wand",Name="buttonPetalWand",Parent=actions_Frame})
+	ButtonState.Forms(ButtonSet,4,3,2)
+	local buttonConvertMask = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Convert Mask",Name="buttonConvertMask",Parent=actions_Frame})
+		
+	buttonTestXYZ.MouseButton1Down:Connect(function()
+		xyz = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart.CFrame
+		textTestX.Text = xyz.X
+		textTestY.Text = xyz.Y
+		textTestZ.Text = xyz.Z
+	end)
+
+	buttonTPToXYZ.MouseButton1Down:Connect(function()
+		if	xyz.Y ~= 0 then
+			humanoidRootPart.CFrame = xyz
+		end
+	end)
+
+	buttonTPMenuLoad.MouseButton1Down:Connect(function()
+		ButtonState.Off(buttonTPMenuLoad)
+		loadstring(game:HttpGet(('https://raw.githubusercontent.com/Status2024/LuaScripts/refs/heads/main/_BSS%20%E2%80%94%20Subsidiary.lua'),true))()
+		wait(3)
+		ButtonState.Activation(buttonTPMenuLoad)
+	end)
+
+	buttonStickers.MouseButton1Down:Connect(function()
+		if ButtonState.OnOff(buttonStickers) then
+			for _,v in pairs(workspace.HiddenStickers:GetChildren()) do
+				table.insert(ActionFlags.Stickers, v)
+			end
+		end
+	
+		if #ActionFlags.Stickers > 0 then
+			local first = table.remove(ActionFlags.Stickers, 1)
+			pcall(function()
+				humanoidRootPart.CFrame = first.CFrame
+			end)
+			buttonStickers.Text = tostring(#ActionFlags.Stickers )
+			wait()
+		end
+		if #ActionFlags.Stickers == 0 then
+			buttonStickers.Text = "Stickers"
+			ButtonState.Activation(buttonStickers)
+		end
+	end)
+
+	buttonFieldDeccosDel.MouseButton1Down:Connect(function()
+	if	buttonFieldDeccosDel.Active then
+		for _,v in pairs(workspace.FieldDecos:GetChildren()) do
+			v:Destroy()
+		end
+		for _,v in pairs(workspace.Decorations.Misc:GetChildren()) do
+			v:Destroy()
+		end
+		ButtonState.Off(buttonFieldDeccosDel)
+		--BasePart MeshPart UnionOperation
+		--Model ManualWeld Weld
+		--Decorations
+		--Territories
+	end
+end)
+
+	buttonCDestroy.MouseButton1Down:Connect(function()
+		for _,v in pairs(workspace.Collectibles:GetChildren()) do
+			v:Destroy()
+		end
+	end)
+
+	buttonQuest.MouseButton1Down:Connect(function()
+		ButtonState.Off(buttonQuest)
+		coroutine.wrap(WRP.remoteQuest)()
+		wait(5)
+		ButtonState.Activation(buttonQuest)
+	end)
+	
+	buttonStQuest.MouseButton1Down:Connect(function()
+		ButtonState.Off(buttonStQuest)
+		coroutine.wrap(WRP.remoteStQuest)()
+		wait(5)
+		ButtonState.Activation(buttonStQuest)
+	end)
+
+	buttonPetalWand.MouseButton1Down:Connect(function()
+		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip", {
+			["Mute"] = true,["Type"] = "Petal Wand",["Category"] = "Collector"})
+	end)
+
+	buttonConvertMask.MouseButton1Down:Connect(function()
+		if ButtonState.OnOff(buttonConvertMask)then
+			AutoFlags.ConvertMaskBottonDown = true
+		else
+			AutoFlags.ConvertMaskBottonDown = false
+			ButtonState.Activation(buttonConvertMask)
+		end
+	end)
+
+	-- перебор компонентов Collectibles
+	--[[local function testAutoDiging()
+		local function detectTool()
+			for _,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+				if v:IsA("Tool") then
+					return v
+				end
+			end
+			return false
+		end
+
+		local tool = detectTool()
+		while AutoFlags.DigBottonDown and tool do  
+			tool.ClickEvent:FireServer()
+			wait(timtDiging_)
+		end
+	end]]
+
+	-- перебор компонентов Collectibles
+	local function textureCollectiblesFunction()
+		local tmpText = ""
+		for _,v in pairs(workspace.Collectibles:GetChildren()) do
+			for index, descendant in pairs(v:GetDescendants()) do
+				if descendant.Name == "FrontDecal" then
+					tmpText = tmpText..tostring(descendant.Texture)
+				end
+			end
+		end
+		textKey.Text = tmpText
+	end
+
+	-- перебор компонентов Particles
+	--[[local TextureParticlesFunction = coroutine.wrap(function()
+	local tmpText = ""
+	for _,v in pairs(workspace.Particles:GetChildren()) do
+		for index, descendant in pairs(v:GetDescendants()) do
+			if descendant.Name == "FrontDecal" then
+				tmpText = tmpText..tostring(descendant.Texture)
+			end
+		end
+	end
+	textKey.Text = tmpText
+	end)]]
+	
+	-- перебор компонентов workspace Поиск мёда 
+	--[[local TextureFindHoneyFunction = coroutine.wrap(function()
+	textKey.Text = ""
+		for _, descendant in pairs(game.workspace:GetDescendants()) do
+			--if not descendant:IsA("BasePart") then
+			--if descendant.Name == "FrontDecal" then
+			if descendant.Parent.Name == "Gumball Machine" then
+			else
+				--if descendant.Texture == "rbxassetid://2028574353" then
+				if string.find(descendant.Texture, "rbxassetid") then
+					textKey.Text = textKey.Text..tostring(descendant.Parent.Parent.Parent.Name).."."
+					textKey.Text = textKey.Text..tostring(descendant.Parent.Parent.Name).."."
+					textKey.Text = textKey.Text..tostring(descendant.Parent.Name).."."
+					textKey.Text = textKey.Text..tostring(descendant.Name).."."
+					textKey.Text = textKey.Text..tostring(descendant.Texture)..":::::"
+				end
+			end
+			--end
+			--end
+		end
+	end)]]
+	
+	local function toggleTextureCollectibles(input, gameProcessed)
+		if HumanoidAction.AllStarting and input.KeyCode == Enum.KeyCode.Y then
+			coroutine.wrap(textureCollectiblesFunction)()
+		end
+	end
+	ConnectionKey.ConnectionT = game:GetService("UserInputService").InputEnded:Connect(toggleTextureCollectibles)
+	
+	buttonSkan.MouseButton1Down:Connect(function()
+		coroutine.wrap(textureCollectiblesFunction)()
+		--TextureParticlesFunction()
+		--TextureFindHoneyFunction()
+	end)
+end)
+
+spawn(function()------------------settings_Frame---------------
+	ButtonState.Forms(ButtonSet,2,1,1)
+	local buttonAutoBoost = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="ABoost",Name="buttonAutoBoost",Parent=settings_Frame,TextSize = 10})
+	ButtonState.Forms(ButtonSet,3,1,1)
+	local buttonAutoDispenser = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Auto Dispenser",Name="buttonAutoDispenser",Parent=settings_Frame,TextSize = 10})
+	ButtonState.Forms(ButtonSet,4,1,1)
+	local buttonBalloon = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Balloon",Name="buttonBalloon",Parent=settings_Frame})
+	ButtonState.Forms(ButtonSet,5,1,1)
+	local buttonAutoDig = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Auto Dig",Name="buttonAutoDig",Parent=settings_Frame})
+	ButtonState.Forms(ButtonSet,6,1,1)
+	local buttonAutoChristmas = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Auto Christmas",Name="buttonAutoChristmas",Parent=settings_Frame,TextSize = 10,Visible = true})
+	ButtonState.Forms(ButtonSet,7,1,1)
+	local buttonDistance = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Dist to board: ",Name="buttonDistance",Parent=settings_Frame,TextSize = 10})
+
+	ButtonState.Forms(ButtonSet,2,2,1)
+	local buttonAutoMondo = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="AMondo",Name="buttonAutoMondo",Parent=settings_Frame})
+	ButtonState.Forms(ButtonSet,3,2,1)
+	local buttonAutoMobs = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="AMobs",Name="buttonAutoMobs",Parent=settings_Frame,TextSize = 10})
+	ButtonState.Forms(ButtonSet,7,2,1)
+	local buttonAutoBasicEgg = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="APrinBasicEgg",Name="buttonAutoBasicEgg",Parent=settings_Frame,TextSize = 10})
+
+		
+	ButtonState.Forms(ButtonSet,1,3,1)
+	local buttonAutoTornado = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="ATornado",Name="buttonAutoTornado",Parent=settings_Frame,TextSize = 10})
+	ButtonState.Forms(ButtonSet,2,3,1)
+	local buttonBalloonAndStart = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Balloon&Start",Name="buttonBalloonAndStart",Parent=settings_Frame,TextSize = 10})
+	ButtonState.Forms(ButtonSet,3,3,1)
+	local buttonSnailTime = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="buttonSnailTime",Name="buttonSnailTime",Parent=settings_Frame,TextSize = 10})
+	
+	ButtonState.Forms(ButtonSet,4,3,1)
+	local buttonAutoFind = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="AFind",Name="buttonAutoFind",Parent=settings_Frame,TextSize = 10})
+		ButtonState.Forms(ButtonSet,5,3,1)
+	local buttonFind = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Find",Name="buttonFind",Parent=settings_Frame})
+		ButtonState.Forms(ButtonSet,6,3,1)
+	local buttonReset = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Reset",Name="buttonReset",Parent=settings_Frame})
+	
+	ButtonState.Forms(ButtonSet,7,3,3)
+	local buttonDiamondMaskEquip = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Diamond Mask",Name="buttonDiamondMaskEquip",Parent=settings_Frame,TextSize = 10,BackgroundColor3=GuiColor.Blue_})
+	ButtonState.Forms(ButtonSet,8,3,3)
+	local buttonGummyMaskEquip = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Gummy Mask",Name="buttonGummyMaskEquip",Parent=settings_Frame,TextSize = 10,BackgroundColor3=GuiColor.Color_LBlack_})
+	ButtonState.Forms(ButtonSet,9,3,3)
+	local buttonDemonMaskEquip = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Demon Mask",Name="buttonDemonMaskEquip",Parent=settings_Frame,TextSize = 10,BackgroundColor3=GuiColor.Red_})
+	ButtonState.Forms(ButtonSet,10,3,3)
+	local buttonHoneyMaskEquip = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Honey Mask",Name="buttonHoneyMaskEquip",Parent=settings_Frame,TextSize = 10,BackgroundColor3=GuiColor.On_Color_Y})
+		
+	buttonAutoDig.MouseButton1Down:Connect(function()--
+		if AutoFlags.DigBottonDown == false then
+			AutoFlags.DigBottonDown = true
+			ButtonState.On(buttonAutoDig)
+			coroutine.wrap(WRP.autoDiging)()
+		else
+			AutoFlags.DigBottonDown = false
+			ButtonState.Activation(buttonAutoDig)
+		end
+	end)
+
+	buttonAutoBoost.MouseButton1Down:Connect(function()--
+		local function usingBoost()
+			while AutoFlags.BoostBottonDown do	
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Red Field Booster")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Blue Field Booster")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Field Booster")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Coconut Dispenser")
+				if not ButtonState.LaunchPeriod(buttonAutoBoost, 120) then break end
+			end
+			ButtonState.Activation(buttonAutoBoost)
+		end
+		
+		if AutoFlags.BoostBottonDown == false then
+			AutoFlags.BoostBottonDown = true
+			ButtonState.On(buttonAutoBoost)
+			coroutine.wrap(usingBoost)()
+		else
+			AutoFlags.BoostBottonDown = false
+			ButtonState.Off(buttonAutoBoost)
+		end
+	end)
+
+	buttonAutoDispenser.MouseButton1Down:Connect(function()--
+		local function usingDispenser()
+			while AutoFlags.DispenserBottonDown do
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Glue Dispenser")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Wealth Clock")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Strawberry Dispenser")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Blueberry Dispenser")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Treat Dispenser")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Free Ant Pass Dispenser")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Honey Dispenser")
+				game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Free Royal Jelly Dispenser")
+		
+				--game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Beesmas Feast")
+				--game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Gingerbread House")
+				if not ButtonState.LaunchPeriod(buttonAutoDispenser, 30) then break end
+			end
+			ButtonState.Activation(buttonAutoDispenser)
+		end
+		
+		if AutoFlags.DispenserBottonDown == false then
+			AutoFlags.DispenserBottonDown = true
+			ButtonState.On(buttonAutoDispenser)
+			coroutine.wrap(usingDispenser)()
+		else
+			AutoFlags.DispenserBottonDown = false
+			ButtonState.Off(buttonAutoDispenser)
+		end
+	end)
+
+	buttonSpeed.MouseButton1Down:Connect(function()		
+		if HumanoidState.Speed == 0 then
+			HumanoidState.Speed = 50
+			buttonSpeed.Text = "Speed: "..HumanoidState.Speed
+			buttonSpeed.BackgroundColor3 = GuiColor.On_Color_G
+			coroutine.wrap(WRP.applySpeed)()
+		elseif HumanoidState.Speed == 50 then		
+			HumanoidState.Speed = 75
+			buttonSpeed.Text = "Speed: "..HumanoidState.Speed
+			buttonSpeed.BackgroundColor3 = GuiColor.On_Color_Y
+		elseif HumanoidState.Speed == 75 then		
+			HumanoidState.Speed = 89
+			buttonSpeed.Text = "Speed: "..HumanoidState.Speed
+			buttonSpeed.BackgroundColor3 = GuiColor.On_Color_R
+		elseif HumanoidState.Speed == 89 then			
+			HumanoidState.Speed = 0
+			buttonSpeed.Text = "Speed: "
+			buttonSpeed.BackgroundColor3 = GuiColor.Base_
+		end
+		HumanoidState.TmpSpeed = HumanoidState.Speed
+	end)
+
+	buttonBalloon.MouseButton1Down:Connect(function()
+	
+		local function balloonTracking()
+			if ActionFlags.StateBalloonBotton == 1 then
+				ActionFlags.StateBalloonBotton = 600
+			else
+				return
+			end
+			
+			timeAfterBalloonUnloading()
+			while ActionFlags.BalloonUnloading do
+				local tmpTimeBalloonBotton_ = math.floor(time() - ActionFlags.TimeAfterBalloonUnloading)
+				if tmpTimeBalloonBotton_ >= ActionFlags.StateBalloonBotton then
+					BackpackBalloonUnloading()
+					wait(.05)
+				end
+				wait(10)
+			end
+			
+			ButtonState.Activation(buttonBalloon)
+		end
+
+		if buttonBalloon.BackgroundColor3 == GuiColor.Base_ then
+			ActionFlags.BalloonUnloading = true
+			buttonBalloon.Text = "Balloon: 10"
+			ButtonState.On(buttonBalloon)
+			ActionFlags.StateBalloonBotton = 1
+			coroutine.wrap(balloonTracking)()
+		elseif ActionFlags.StateBalloonBotton == 600 then
+			ActionFlags.StateBalloonBotton = 1200
+			buttonBalloon.Text = "Balloon: 20"
+		elseif ActionFlags.StateBalloonBotton == 1200 then
+			ActionFlags.StateBalloonBotton = 1800
+			buttonBalloon.Text = "Balloon: 30"
+		elseif ActionFlags.StateBalloonBotton == 1800 then
+			buttonBalloon.Text = "Balloon: 50"
+			ActionFlags.StateBalloonBotton = 3000
+			buttonBalloon.BackgroundColor3 = GuiColor.On_Color_Y
+		elseif buttonBalloon.BackgroundColor3 == GuiColor.On_Color_Y then
+			ButtonState.Off(buttonBalloon)
+			ActionFlags.BalloonUnloading = false
+			buttonBalloon.Text = "Balloon"
+			ActionFlags.StateBalloonBotton = 0
+		end
+	end)
+
+	buttonDistance.MouseButton1Down:Connect(function()
+		if BordersField.distanceToBoard == 5 then
+			BordersField.distanceToBoard = 30
+			buttonDistance.Text = "Dist to board: 30"
+			ButtonState.On(buttonDistance)
+		else			
+			BordersField.distanceToBoard = 5
+			buttonDistance.Text = "Dista to board:"
+			ButtonState.Activation(buttonDistance)
+		end
+		setBordersField(BordersField.distanceToBoard)
+	end)
+	
+	buttonAutoMushrooms.MouseButton1Down:Connect(function()--
+		if AutoFlags.MushroomsBottonDown == false then
+			AutoFlags.MushroomsBottonDown = true
+			ButtonState.On(buttonAutoMushrooms)
+		else
+			AutoFlags.MushroomsBottonDown = false
+			ButtonState.Activation(buttonAutoMushrooms)
+		end
+	end)
+
+	buttonAutoMondo.MouseButton1Down:Connect(function()--?
+		if not AutoFlags.MondoBottonDown then
+			AutoFlags.MondoBottonDown = true
+			ButtonState.On(buttonAutoMondo)
+		else
+			AutoFlags.MondoBottonDown = false
+			ButtonState.Activation(buttonAutoMondo)
+		end
+	end)
+
+	buttonAutoMobs.MouseButton1Down:Connect(function()--MobsBottonDown
+		local function collectDist30()
+			for _,v in pairs(workspace.Collectibles:GetChildren()) do			-- перебираем собираемые элементы
+				if (v.Position - humanoidRootPart.Position).magnitude <= 30 then	-- если растояние меньше, собираем
+																					-- токен находится на уровне
+					if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
+						if buttonAutoMobs.Active then
+							humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
+							wait(.2)
+						else
+							break
+						end
+					end
+				end
+			end
+		end
+		
+		local function collecting(delay,count)
+			wait(delay)
+			for count = 1, count do	collectDist30() end
+		end
+
+		local function step(vector)
+			if not buttonAutoMobs.Active then
+				return false
+			end
+			MoveToPoint(vector)
+			return true
+		end
+
+		local function mobsKillFunction()
+			while buttonAutoMobs.Active do
+				coroutine.wrap(WRP.remoteQuest)()
+				while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+					wait(25)
+				end
+				HumanoidAction.Pause = true
+				
+				wait(2)
+				humanoidRootPart.CFrame = Waypoints["Star Room"]--тп Star room
+				wait(10)
+				if step(Vector3.new(104, 66, 282)) then break end
+				if step(Vector3.new(151, 34, 197)) then break end	-- клевер
+				collecting(5,5)
+				if step(Vector3.new(120, 4, 104)) then break end	-- синие цветы
+				collecting(5,5)
+				if step(Vector3.new(105, 4, 87)) then break end
+				if step(Vector3.new(39, 4, 140)) then break end
+				if step(Vector3.new(-5, 4, 174)) then break end
+				if step(Vector3.new(-85, 4, 120)) then break end	-- мухамор
+				collecting(5,5)
+				if step(Vector3.new(-85, 4, 120)) then break end
+				if step(Vector3.new(-13, 4, 171)) then break end
+				if step(Vector3.new(0, 20, 50)) then break end
+				if step(Vector3.new(-33, 20, -2)) then break end	-- паук
+				collecting(5,5)
+				if step(Vector3.new(-120, 20, 13)) then break end
+				if step(Vector3.new(-180, 20, -3)) then break end	-- клубника
+				collecting(5,5)
+				if step(Vector3.new(-137, 20, 59)) then break end
+				if step(Vector3.new(-239, 35, 56)) then break end
+				if step(Vector3.new(-245, 68, -81)) then break end
+				if step(Vector3.new(-328, 68, -181)) then break end	-- лес
+				collecting(9,9)
+				if step(Vector3.new(-336, 68, -77)) then break end
+				if step(Vector3.new(-332, 20, 130)) then break end	-- розы
+				collecting(9,9)
+				if step(Vector3.new(-332, 20, 130)) then break end
+				if step(Vector3.new(-266, 20, 177)) then break end
+				if step(Vector3.new(-215, 4, 206)) then break end
+				if step(Vector3.new(-208, 4, 140)) then break end
+				if step(Vector3.new(-90, 4, 214)) then break end
+				if step(Vector3.new(0, 4, 225)) then break end
+				if step(Vector3.new(-13, 4, 171)) then break end
+				if step(Vector3.new(0, 20, 50)) then break end
+				if step(Vector3.new(150, 20, -28)) then break end	-- бамбук
+				collecting(7,5)
+				if step(Vector3.new(205, 20, -24)) then break end
+				if step(Vector3.new(204, 42, 56)) then break end
+				if step(Vector3.new(227, 42, 56)) then break end
+				if step(Vector3.new(232, 68, -86)) then break end
+				if step(Vector3.new(253, 68, -205)) then break end	-- ананас
+				collecting(5,5)
+				
+				wait(1)
+				if HumanoidAction.Farm then
+					goToField()
+					wait(3)
+				else
+					goToSpawn()
+				end
+				if not buttonAutoMobs.Active then break end
+				HumanoidAction.Pause = false
+				for mi = 1, 20 do
+					for delta = 1, 3 do
+						if not buttonAutoMobs.Active then break end
+						wait(20)
+					end
+				end
+				if buttonAutoMobs.Active then
+					print("Kill mobs 20 min")
+				end
+			end
+			HumanoidAction.Pause = false
+			ButtonState.Activation(buttonAutoMobs)
+		end
+
+		if buttonAutoMobs.BackgroundColor3 == GuiColor.Base_ then
+			ButtonState.On(buttonAutoMobs)
+			coroutine.wrap(mobsKillFunction)()
+		elseif buttonAutoMobs.BackgroundColor3 == GuiColor.On_Color_G then
+			ButtonState.Off(buttonAutoMobs)
+		end
+	end)
+
+	buttonAutoBasicEgg.MouseButton1Down:Connect(function()--
+		local function usingPrinter()
+			local eggType = "Basic Egg"
+			while AutoFlags.BasicEggBottonDown do
+				game:GetService("ReplicatedStorage").Events.StickerPrinterActivate:FireServer(eggType)
+				if not ButtonState.LaunchPeriod(buttonAutoBasicEgg, 3600) then break end
+			end
+			ButtonState.Activation(buttonAutoBasicEgg)
+		end
+		
+		if not AutoFlags.BasicEggBottonDown then
+			AutoFlags.BasicEggBottonDown = true
+			ButtonState.On(buttonAutoBasicEgg)
+			coroutine.wrap(usingPrinter)()
+		else
+			AutoFlags.BasicEggBottonDown = false
+			ButtonState.Off(buttonAutoBasicEgg)
+		end
+	end)
+
+	buttonAutoTracking.MouseButton1Down:Connect(function()--
+		if not AutoFlags.TrackingBottonDown then
+			AutoFlags.TrackingBottonDown = true
+			ButtonState.On(buttonAutoTracking)
+			coroutine.wrap(trackingFunction)()
+		else
+			AutoFlags.TrackingBottonDown = false
+			ButtonState.Off(buttonAutoTracking)
+		end
+	end)
+
+	buttonAutoVicious.MouseButton1Down:Connect(function()--
+		if not AutoFlags.ViciousBottonDown then
+			AutoFlags.ViciousBottonDown = true
+			ButtonState.On(buttonAutoVicious)
+		else
+			AutoFlags.ViciousBottonDown = false
+			ButtonState.Activation(buttonAutoVicious)
+		end
+	end)
+
+	buttonAutoWindy.MouseButton1Down:Connect(function()--
+		if not AutoFlags.WindyBottonDown then
+			AutoFlags.WindyBottonDown = true
+			ButtonState.On(buttonAutoWindy)
+		else
+			AutoFlags.WindyBottonDown = false
+			ButtonState.Activation(buttonAutoWindy)
+		end
+	end)
+
+	buttonAutoStickBug.MouseButton1Down:Connect(function()--
+		if not AutoFlags.StickBugBottonDown then
+			AutoFlags.StickBugBottonDown = true
+			ButtonState.On(buttonAutoStickBug)
+		else
+			AutoFlags.StickBugBottonDown = false
+			ButtonState.Activation(buttonAutoStickBug)
+		end
+	end)
+
+	buttonAutoTornado.MouseButton1Down:Connect(function()--
+		local function controlTornado()
+			local tweenservice_ = game:GetService("TweenService")
+			local info_ = TweenInfo.new(0.2) --(in seconds)
+			local item_ = {}
+			while AutoFlags.TornadoBottonDown do
+				while HumanoidAction.Pause or HumanoidAction.CapacityUnloading or not HumanoidAction.Farm do
+					wait(1)
+				end
+				for _,tornado_ in pairs(game.workspace.Particles:GetDescendants()) do
+					if tornado_.Name == "Root" or tornado_.Name == "Plane" then
+						if BordersField.min_X < tornado_.Position.x and tornado_.Position.x < BordersField.max_X
+							and BordersField.min_Z < tornado_.Position.z and tornado_.Position.z < BordersField.max_Z then
+							for _,v in pairs(workspace.Collectibles:GetChildren()) do		-- перебираем собираемые элементы
+								if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
+									if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then	-- токен находится на уровне
+										if not AutoFlags.TornadoBottonDown then return end
+										item_.CFrame = CFrame.new(v.Position.x, tornado_.Position.y, v.Position.z)
+										local Tween = tweenservice_:Create(tornado_, info_, item_)
+										Tween:Play()
+										--wait(info_)
+										wait(.1)
+									end
+								end
+							end
+						end
+					end
+				end
 				wait(.2)
 			end
-			
-			repeat
-			for count = 1, 20 do
-				if not AutoFlags.MushroomsBottonDown then HumanoidAction.Pause = false return end
-				humanoid:MoveTo(Vector3.new(positionMushroom_.x + math.random(-20, 20),
-					humanoidRootPart.Position.y, positionMushroom_.z + math.random(-20, 20)), nil)
-				if (positionMushroom_.y - humanoidRootPart.Position.y) > 7 or
-					(positionMushroom_ - humanoidRootPart.Position).magnitude > 40 then 
-					humanoidRootPart.CFrame = CFrame.new(positionMushroom_)
+		end
+	
+		if AutoFlags.TornadoBottonDown == false then
+			AutoFlags.TornadoBottonDown = true
+			ButtonState.On(buttonAutoTornado)
+			coroutine.wrap(controlTornado)()
+		else
+			AutoFlags.TornadoBottonDown = false
+			ButtonState.Activation(buttonAutoTornado)
+		end
+	end)
+
+	buttonDiamondMaskEquip.MouseButton1Down:Connect(function() switchMask("Blue") end)
+	buttonGummyMaskEquip.MouseButton1Down:Connect(function() switchMask("White") end)
+	buttonDemonMaskEquip.MouseButton1Down:Connect(function() switchMask("Red") end)
+	buttonHoneyMaskEquip.MouseButton1Down:Connect(function() switchMask("Honey") end)
+
+	buttonBalloonAndStart.MouseButton1Down:Connect(function()
+		if ButtonState.OnOff(buttonBalloonAndStart) then
+			buttonFarm.BackgroundColor3 = GuiColor.On_Color_R
+			buttonFarm.Active = false
+			HumanoidAction.Farm = true
+			ActionFlags.BalloonUnloading = true
+			BackpackBalloonUnloading()
+			wait(.5)
+			if HumanoidAction.Farm then
+				buttonFarm.Active = true
+				ButtonState.On(buttonFarm)
+				farmBottonDown()
+			end
+			ButtonState.Activation(buttonBalloonAndStart)
+		else
+			HumanoidAction.Farm = false
+			ButtonState.Activation(buttonFarm)
+			if ActionFlags.StateBalloonBotton == 0 then
+				ActionFlags.BalloonUnloading = false
+			end
+		end
+	end)
+
+	buttonSnailTime.MouseButton1Down:Connect(function()--?
+		local function snailTimeDecrease()
+			switchMask(3)
+			ButtonState.On(buttonDistance)
+			setBordersField(30)
+			while ActionFlags.SnailTimeBottonDown >= 1 do
+				ActionFlags.SnailTimeBottonDown = ActionFlags.SnailTimeBottonDown - 1	
+				buttonSnailTime.Text = "buttonSnailTime "..ActionFlags.SnailTimeBottonDown
+				if not ButtonState.LaunchPeriod(buttonSnailTime, 60) then break end
+				for _,v in pairs(game.workspace.Monsters:GetChildren()) do
+					if not string.find(v.Name,"Snail") and
+						(humanoidRootPart.Position - fieldPosition).magnitude < 50 then
+						ActionFlags.SnailTimeBottonDown = 0
+					end			
 				end
-				checkKilled(5)
-				BackpackUnloadingMushroom(positionMushroom_)
 			end
-			until not SearchWahhh()
-			
-			if not SubWahhh(mushroom_) then
-				wait(.05)
-				Collect_Dist40ToPos10sec(positionMushroom_)
+			if ActionFlags.SnailTimeBottonDown < 0 then
+				ActionFlags.SnailTimeBottonDown = 0
 			end
-			break
-		end
-	end
-end
-GoToFieldAndSplinker()
-MaskEquiping()
-HumanoidAction.Pause = false
-end
-
-local function AutoKillVicious()
-if ViciousTPBotton.BackgroundColor3 == Color3.new(1, 0.3, 0.3) then
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(5)
-	end
-	HumanoidAction.Pause = true
-	wait()
-	for _,v in pairs(game.workspace.Monsters:GetChildren()) do
-	if string.find(v.Name,"Vici") or string.find(v.Name,"Gifted") then
-		humanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
-		wait(.3)
-		while true do
-			local human = v:FindFirstChildOfClass("Humanoid")
-			if human then
-				humanoidRootPart.CFrame = CFrame.new(v.HumanoidRootPart.CFrame.X,
-					v.HumanoidRootPart.CFrame.Y + 20,
-					v.HumanoidRootPart.CFrame.Z)
-				wait(.01)
-				if not AutoFlags.ViciousBottonDown then break end
+			buttonSnailTime.Text = "buttonSnailTime"
+			ButtonState.Activation(buttonSnailTime)
+			if HumanoidState.SetMask == 3 then
+				switchMask(2)
 			else
-				break
+				switchMask(HumanoidState.SetMask)
+			end
+			ButtonState.Activation(buttonDistance)
+			setBordersField(5)
+		end
+
+		if ActionFlags.SnailTimeBottonDown == 0 then
+			ActionFlags.SnailTimeBottonDown = 30
+			buttonSnailTime.Text = "buttonSnailTime "..ActionFlags.SnailTimeBottonDown
+			ButtonState.On(buttonSnailTime)
+			snailTimeDecrease()
+		elseif ActionFlags.SnailTimeBottonDown <= 450 then
+			ActionFlags.SnailTimeBottonDown = ActionFlags.SnailTimeBottonDown + 30
+			buttonSnailTime.Text = "buttonSnailTime "..ActionFlags.SnailTimeBottonDown
+		else
+			ActionFlags.SnailTimeBottonDown = 0
+			ButtonState.Off(buttonSnailTime)
+		end
+	end)
+
+	buttonAutoFind.MouseButton1Down:Connect(function()--
+		if AutoFlags.TicketBottonDown == false then
+			AutoFlags.TicketBottonDown = true
+			ButtonState.On(buttonAutoFind)
+		else
+			AutoFlags.TicketBottonDown = false
+			ButtonState.Activation(buttonAutoFind)
+		end
+	end)
+
+	buttonFind.MouseButton1Down:Connect(function()
+		ButtonState.Off(buttonFind)
+		--humanoidRootPart.Anchored = true
+		print("ticketFunc")
+		local boolTicket_, cFrameTicket_ = SearchTicket()
+		if boolTicket_ then
+			print("ticketfind-1")
+			humanoidRootPart.CFrame = CFrame.new(cFrameTicket_.X,
+				cFrameTicket_.Y, cFrameTicket_.Z)
+		else
+			print("-ticketFunc2-")
+			boolTicket_, cFrameTicket_ = SearchTicket2()
+			if boolTicket_ then 
+				print("-ticketfind-2-")
+				humanoidRootPart.CFrame = CFrame.new(cFrameTicket_.X,
+					cFrameTicket_.Y, cFrameTicket_.Z)
 			end
 		end
-		break
-	end
-	end
-	wait(0.2)
-	GoToFieldOrSpawn()
-	HumanoidAction.Pause = false
-end
-end
+		--humanoidRootPart.Anchored = false
+		ButtonState.Activation(buttonFind)
+	end)
 
-local function AutoKillWindy()
-if WindyTPBotton.BackgroundColor3 == Color3.new(0.3, 0.3, 0.3) then
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(4)
-	end
-	HumanoidAction.Pause = true
-	wait(.1)
-	for _,v in pairs(game.workspace.NPCBees:GetChildren()) do
-		if string.find(v.Name,"Windy") then
-			humanoidRootPart.CFrame = v.CFrame * CFrame.new(0,5,0)
-		end
-	end
-	wait(.3)
-	for _,r in pairs(game.workspace.Monsters:GetChildren()) do
-	if string.find(r.Name,"Windy") then
-		humanoidRootPart.CFrame = r.HumanoidRootPart.CFrame * CFrame.new(0,30,0)
-		while true do
-			local human = r:FindFirstChildOfClass("Humanoid")
-			if human then
-				humanoidRootPart.CFrame = CFrame.new(r.HumanoidRootPart.CFrame.X,
-					r.HumanoidRootPart.CFrame.Y + 30,
-					r.HumanoidRootPart.CFrame.Z)
-				wait(.01)
-				if not AutoFlags.WindyBottonDown then break end
-			else
-				break
-			end
+	buttonReset.MouseButton1Down:Connect(function()
+		humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
+		humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+		HumanoidAction.Pause = false
+		HumanoidAction.CapacityUnloading = false
+	end)
 
-			if humanoid.Health > 40 then
-			for _,v in pairs(workspace.Collectibles:GetChildren()) do
-			if (v.Position - humanoidRootPart.Position).magnitude < 150 then
-				local descendants_ = v:GetDescendants()
-				for index, descendant in pairs(descendants_) do
-					if descendant.Name == "FrontDecal" then
-						if tostring(descendant.Texture) == "rbxassetid://1629547638" then
-							humanoidRootPart.CFrame = CFrame.new(descendant.Parent.Position)
-							wait(.15)
+	buttonAutoChristmas.MouseButton1Down:Connect(function()--
+		local function collectDist25()
+			local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+			for k,v in pairs(workspace.Collectibles:GetChildren()) do			-- перебираем собираемые элементы
+				if tostring(v) == tostring(game.Players.LocalPlayer.Name) or tostring(v) == "C" then
+					if (v.Position - humanoidRootPart.Position).magnitude <= 25 then	-- если растояние меньше, собираем
+																						-- токен находится на уровне
+						if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
+							if buttonAutoChristmas.Active then
+								humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
+								wait(.5)
+							else
+								break
+							end
 						end
 					end
 				end
 			end
-			end
-			end
 		end
-		wait()
-	end
-	end
-	wait(0.2)
-	GoToFieldOrSpawn()
-	HumanoidAction.Pause = false
-end
-	for _,v in pairs(workspace.Collectibles:GetChildren()) do
-	if (v.Position - humanoidRootPart.Position).magnitude <= 30 then
-	if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
-	if AutoFlags.MobsBottonDown then
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
-		wait(.2)
-	else
-		break
-	end
-	end
-	end
-	end
-end
 
-local function AutoKillStickBug()
-if AutoStickBug.TextColor3 == Color3.new(0.3, 1, 0.3) then
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(4)
-	end
-	HumanoidAction.Pause = true
-	workspace.Gravity = 80
-	wait(.1)
-	for _,r in pairs(game.workspace.Monsters:GetChildren()) do
-		if string.find(r.Name,"Stick Bug") then
-			while true do
-				local human = r:FindFirstChildOfClass("Humanoid")
-				if human then
-					humanoidRootPart.CFrame = CFrame.new(r.HumanoidRootPart.CFrame.X,
-						r.HumanoidRootPart.CFrame.Y + 40,
-						r.HumanoidRootPart.CFrame.Z + 20)
-					wait(.01)
-					if not AutoFlags.StickBugBottonDown then break end
-				else
-					break
+		local function collecting(delay,count)
+			wait(delay)
+			for count = 1, count do	collectDist25() end
+		end
+
+		local function step(delay,cFrame)
+			wait(delay)
+			if not buttonAutoChristmas.Active then
+				return false
+			end
+			humanoidRootPart.CFrame = cFrame
+			wait(1)
+			return true
+		end
+
+		local function collectionChristmas()
+			while buttonAutoChristmas.Active do
+				while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
+					wait(10)
 				end
-			end
-			break
-		end
-	end
-	wait(0.1)
-	workspace.Gravity = 170
-	GoToFieldOrSpawn()
-	HumanoidAction.Pause = false
-end
-end
-
-local function AutoKillMondo()
-	for _,v in pairs(game.workspace.Monsters:GetChildren()) do
-		if string.find(v.Name,"Mondo") then
-			while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-				wait(4)
-			end
-			HumanoidAction.Pause = true
-			print("AutoKillMondo Start")
-			game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-			{["Mute"] = true, ["Type"] = "Demon Mask", ["Category"] = "Accessory"})
-			TPPepButton.BackgroundColor3 = Color3.new(1, 0.2, 0,06)
-			local basePoint = CFrame.new(20,177,-165)
-			humanoidRootPart.CFrame = basePoint
-			wait(3)
-			local safeDistanceToMondo = 40
-			local relativePosition = 0
-			while true do
-				local human = v:FindFirstChildOfClass("Humanoid")
-				if human and AutoFlags.MondoBottonDown then
-					relativePosition = safeDistanceToMondo / ((v.HumanoidRootPart.CFrame.X-basePoint.X)^2+(v.HumanoidRootPart.CFrame.Z-basePoint.Z)^2)^0.5
-					if relativePosition < 1 then
-						humanoid:MoveTo(Vector3.new(v.HumanoidRootPart.CFrame.X+(basePoint.X-v.HumanoidRootPart.CFrame.X)*relativePosition,
-							humanoidRootPart.Position.y, v.HumanoidRootPart.CFrame.Z+(basePoint.Z-v.HumanoidRootPart.CFrame.Z)*relativePosition))
-					else
-						humanoid:MoveTo(Vector3.new(basePoint.x, humanoidRootPart.Position.y, basePoint.z))
+				HumanoidAction.Pause = true
+				local toyEvent = game:GetService("ReplicatedStorage").Events.ToyEvent
+				--game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Gingerbread House")
+				if not step(7,CFrame.new(-403.2, 48, 280.2)) then break end					--"Wax"
+				toyEvent:FireServer("Honeyday Candles")
+				if not step(3,CFrame.new(233, 35.61, 239)) then break end					--"Stockings"
+				toyEvent:FireServer("Stockings")
+				collecting(5,2)
+				if not step(7,CFrame.new(421, 132, -333)) then break end					--"Samovar"
+				toyEvent:FireServer("Samovar")
+				collecting(9,11)
+				if not step(3,CFrame.new(36, 236, -512)) then break end						--"Onett's Lid Art"
+				toyEvent:FireServer("Onett's Lid Art")
+				collecting(7,3)
+				if not step(3,CFrame.new(-105, 129, -114)) then break end					--"Beesmas Feast"
+				toyEvent:FireServer("Beesmas Feast")
+				collecting(5,3)
+				
+				if HumanoidAction.Farm == true then
+					goToField()
+				else
+					goToSpawn()
+				end
+				if not buttonAutoChristmas.Active then break end
+				HumanoidAction.Pause = false
+				for ho = 1, 2 do
+					for mi = 1, 180 do
+						if not buttonAutoChristmas.Active then break end
+						wait(20)
 					end
-					wait(.04)
-					if checkKilled(30) then humanoidRootPart.CFrame = basePoint end
-				else
-					break
-				end
-				wait(.1)
+					if buttonAutoChristmas.Active then
+						print("Collection Christmas - ", ho, "h")
+					end
+				end	
 			end
-			print("AutoKillMondo Stop")
-			wait(0.1)
-			MaskEquiping()
-			GoToFieldOrSpawn()
 			HumanoidAction.Pause = false
-			break
+			ButtonState.Activation(buttonAutoChristmas)
 		end
-	end
-end
 
-while HumanoidAction.AllStarting do
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(2)
-	end
-	wait(.1)
-	if AutoFlags.MondoBottonDown then AutoKillMondo() end
-	wait(.1)
-	if AutoFlags.StickBugBottonDown then AutoKillStickBug() end
-	wait(.1)
-	if AutoFlags.MushroomsBottonDown and MushroomPoint.Transparency == 0.5 then
-		AutoFarmMushrooms()
-	end
-	wait(.1)-
-	if AutoFlags.WindyBottonDown then
-		while WindyTPBotton.Transparency do
-			if not AutoFlags.WindyBottonDown then break end
-			AutoKillWindy()
-			wait(.01)
+		if buttonAutoChristmas.BackgroundColor3 == GuiColor.Base_ then
+			ButtonState.On(buttonAutoChristmas)
+			coroutine.wrap(collectionChristmas)()
+		elseif buttonAutoChristmas.BackgroundColor3 == GuiColor.On_Color_G then
+			ButtonState.Off(buttonAutoChristmas)
 		end
-	end
-	wait(.1)
-	if AutoFlags.ViciousBottonDown then AutoKillVicious() end
-	wait(2)
-end
-end)
-FarmKillFunction()
-
-local function FarmBottonDown()
-
-local FiedlChecking = coroutine.wrap(function()
-while HumanoidAction.Farm do
-	wait(5)
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(1)
-		if not HumanoidAction.Farm then return end
-	end
-	if not HumanoidAction.Farm then return end
-	checkKilled(20)
-	if (humanoidRootPart.Position.y - fieldPosition.y) < 1 then
-		tpToField()
-		wait(.1)
-	end
-	if (SizeField.min_X - 30) > humanoidRootPart.Position.x or humanoidRootPart.Position.x > (SizeField.max_X + 30) or
-		(SizeField.min_Z - 30) > humanoidRootPart.Position.z or humanoidRootPart.Position.z > (SizeField.max_Z + 30) then
-		tpToField()
-		wait(.1)
-	end
-end
+	end)
 end)
 
-local function UpdateChecking()
-if tmpField_ ~= TextView.Text then
-	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
-	humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-	fieldCFrame = CFrame.new(workspace.FlowerZones[TextView.Text].Position)
-	fieldPosition = workspace.FlowerZones[TextView.Text].Position
-	sizeField = workspace.FlowerZones[TextView.Text].Size
-	SizeField.min_X = fieldPosition.x - (sizeField.x / 2) + SizeField.distanceToBoard
-	SizeField.max_X = fieldPosition.x + (sizeField.x / 2) - SizeField.distanceToBoard
-	SizeField.min_Z = fieldPosition.z - (sizeField.z / 2) + SizeField.distanceToBoard
-	SizeField.max_Z = fieldPosition.z + (sizeField.z / 2) - SizeField.distanceToBoard
-	tmpField_ = TextView.Text
-end
-end
-
-local GoToToken = coroutine.wrap(function()
-if not HumanoidAction.Pause then tpToField() end
-wait(.5)
-local tmpField_ = ""
-FiedlChecking()
-repeat
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(1)
-		if not HumanoidAction.Farm then return end
-	end
-	humanoid:MoveTo(Vector3.new(fieldPosition.x, humanoidRootPart.Position.y, fieldPosition.z), nil)
-	wait(.01)
-	for k,v in pairs(workspace.Collectibles:GetChildren()) do
-	if (v.Position.x > SizeField.min_X) and (v.Position.x < SizeField.max_X) and (v.Position.z > SizeField.min_Z) and (v.Position.z < SizeField.max_Z) then
-	if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then
-		if not HumanoidAction.Farm or HumanoidAction.Pause then break end	
-		MoveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
-		BackpackBalloonCheckingUnloading()		
-	end
-	end
-	end
-	for k,v in pairs(workspace.Particles:GetChildren()) do
-	if string.find(v.Name,"Bubble") then
-	if (v.Position.x > SizeField.min_X) and (v.Position.x < SizeField.max_X) and (v.Position.z > SizeField.min_Z) and (v.Position.z < SizeField.max_Z) then
-	if ((v.Position.y > fieldPosition.y - 5) and (v.Position.y < fieldPosition.y + 5)) then
-		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
-		MoveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
-		BackpackBalloonCheckingUnloading()	
-	end
-	end
-	end
-	end
-until HumanoidAction.Farm == false
-tmpField_ = ""
-end)
-
-local GoToPoint = coroutine.wrap(function()
-if not HumanoidAction.Pause then tpToField() end
-wait(.5)
-local tmpField_ = ""
-FiedlChecking()
-repeat
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(1)
-		if not HumanoidAction.Farm then return end
-	end
-	humanoid:MoveTo(Vector3.new(fieldPosition.x, humanoidRootPart.Position.y, fieldPosition.z), nil)
-	wait(.01)
-	for i = 1, 2 do
-	for k,v in pairs(workspace.Collectibles:GetChildren()) do
-	if (v.Position.x > SizeField.min_X) and (v.Position.x < SizeField.max_X) and (v.Position.z > SizeField.min_Z) and (v.Position.z < SizeField.max_Z) then
-	if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then
-		if not HumanoidAction.Farm or HumanoidAction.Pause then break end	
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
-		wait(.25)
-		BackpackBalloonCheckingUnloading()		
-	end
-	end
-	end
-	end
-	for i = 1, 1 do
-	for k,v in pairs(workspace.Particles:GetChildren()) do
-	if string.find(v.Name,"Bubble") then
-	if (v.Position.x > SizeField.min_X) and (v.Position.x < SizeField.max_X) and (v.Position.z > SizeField.min_Z) and (v.Position.z < SizeField.max_Z) then
-	if ((v.Position.y > fieldPosition.y - 5) and (v.Position.y < fieldPosition.y + 5)) then
-		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
-		wait(.2)
-		BackpackBalloonCheckingUnloading()
-	end
-	end
-	end
-	end
-	end
-until HumanoidAction.Farm == false
-tmpField_ = ""
-end)
-
-	if HumanoidAction.FarmToSp then
-		GoToPoint()
-	else
-		GoToToken()
-	end
-end
-
-Start_Frame:TweenPosition(UDim2.new(1, -360, 0.09, 0),
-		Enum.EasingDirection.Out, Enum.EasingStyle.Quad, .5, true)
-
-local function toggleKeyRXC(input, gameProcessed)
-	if HumanoidAction.AllStarting then
-		if input.KeyCode == Enum.KeyCode.R then
-			if HumanoidAction.Farm then
-				FarmBotton.BackgroundColor3 = GuiColor.Base_
-				HumanoidAction.Farm = false
-				FarmToBotton.BackgroundColor3 = GuiColor.Base_
-				HumanoidAction.FarmToSp = false
-			else
-				FarmBotton.BackgroundColor3 = Color3.new(0, 1, 0)
-				HumanoidAction.Farm = true
-				FarmBottonDown()
-			end
-		end
-		if input.KeyCode == Enum.KeyCode.X then
-			if Dark_Frame.Transparency == 1 then
-				Dark_Frame.Transparency = 0
-				Start_Frame.Visible = false
-				Dark_Frame.Size = UDim2.new(1, 0, 1.2, 0)
-			else
-				Dark_Frame.Transparency = 1
-				Start_Frame.Visible = true
-				Dark_Frame.Size = UDim2.new(0, 1, 0, 1)
-			end
-		end
-		if input.KeyCode == Enum.KeyCode.F8 then
-			Start_Frame.Visible = not Start_Frame.Visible
-		end
-		if input.KeyCode == Enum.KeyCode.C then
-			MenubottonDown()
-		end
-	end
-end
-ConnectionKey.ConnectionRXC = game:GetService("UserInputService").InputEnded:Connect(toggleKeyRXC)
-
-ConnectionKey.VirtualUserActive = game:GetService("VirtualUser")
-game:GetService("Players").LocalPlayer.Idled:connect(function()
-	ConnectionKey.VirtualUserActive:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-	wait(1)
-	ConnectionKey.VirtualUserActive:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
-
-
-spawn(function()
-
-local DestroyButton = createButton({Size=UDim2.new(0, 25, 0, 25),Position=UDim2.new(0, 190, 0, 0),
-	Text="X",Name="DestroyButton",Parent=Main_Frame,TextSize=18,BackgroundColor3=GuiColor.Red_})
-local TPBotton = createButton({Size=UDim2.new(0, 43, 0, 20),Position=UDim2.new(0, 40, 0, 30),
-	Text="Seg",Name="TPBotton",Parent=Main_Frame,TextSize = 14})
-local DisableFoldingBotton = createButton({Size=UDim2.new(0, 10, 0, 20),Position=UDim2.new(0, 85, 0, 30),
-	Text="",Name="DisableFoldingBotton",Parent=Main_Frame})
-local FarmBotton = createButton({Size=UDim2.new(0, 38, 0, 20),Position=UDim2.new(0, 100, 0, 30),
-	Text="Start",Name="FarmBotton",Parent=Main_Frame})
-local FarmToBotton = createButton({Size=UDim2.new(0, 15, 0, 20),Position=UDim2.new(0, 140, 0, 30),
-	Text="St",Name="FarmToBotton",Parent=Main_Frame,TextSize = 6})
-local HomePoint = createButton({Size=UDim2.new(0, 25, 0, 20),Position=UDim2.new(0, 190, 0, 30),
-	Text="(0)",Name="HomePoint",Parent=Main_Frame,TextSize = 14})
-
-DestroyButton.MouseButton1Down:Connect(function()
-AutoFlags.DigBottonDown = false
-AutoFlags.MobsBottonDown = false
-AutoFlags.ViciousBottonDown = false
-AutoFlags.WindyBottonDown = false
-AutoFlags.StickBugBottonDown = false
-AutoFlags.MondoBottonDown = false
-AutoFlags.DispenserBottonDown = false
-AutoFlags.BoostBottonDown = false
-AutoFlags.TornadoBottonDown = false
-AutoFlags.MushroomsBottonDown = false
-AutoFlags.ChristmasBottonDown = false
-HumanoidState.Speed = 0
-ActionFlags.BalloonBottonDown = false
-ActionFlags.StateBalloonBotton = 0
-SizeField.distanceToBoard = 5
-HumanoidAction.Farm = false
-HumanoidAction.Pause = false
-ConnectionKey.ConnectionT:Disconnect()
-ConnectionKey.ConnectionV:Disconnect()
-ConnectionKey.ConnectionRXC:Disconnect()
-HumanoidAction.AllStarting = false
-wait(2)
-HumanoidAction.AllStarting = nil
-KonOvalGUI:Destroy()
-wait(1)
-return
-end)
-
-TPTopButton.MouseButton1Down:Connect(function()
-	humanoidRootPart.CFrame = CFrame.new(-20, 232, -120)
-end)
-
-TPPepButton.MouseButton1Down:Connect(function()
-	humanoidRootPart.CFrame = CFrame.new(-486, 124, 517)
-end)
-
-ViciousTPBotton.MouseButton1Down:Connect(function()
-for _,v in pairs(game.workspace.Monsters:GetChildren()) do
-	if string.find(v.Name,"Vici") or string.find(v.Name,"Gifted") then
-		game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
-	end
-end
-end)
-
-WindyTPBotton.MouseButton1Down:Connect(function()
-	for _,r in pairs(game.workspace.Monsters:GetChildren()) do
-		if string.find(r.Name,"Windy") then
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = r.HumanoidRootPart.CFrame
-		end
-	end
-	for _,v in pairs(game.workspace.NPCBees:GetChildren()) do
-		if string.find(v.Name,"Windy") then
-			game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame 
-		end
-	end
-end)
-
-MushroomPoint.MouseButton1Down:Connect(function()
-	GoToMushroom()
-end)
-
-MenuBotton.MouseButton1Down:Connect(function()
-	MenubottonDown()
-end)
-
-TPBotton.MouseButton1Down:Connect(function()
-	tpToField()
-end)
-
-DisableFoldingBotton.MouseButton1Down:Connect(function()
-if not AutoFlags.DisableFoldingBotton then
-	DisableFoldingBotton.BackgroundColor3 = Color3.new(0, 1, 1)
-	AutoFlags.DisableFoldingBotton = true
-else
-	DisableFoldingBotton.BackgroundColor3 = GuiColor.Base_
-	AutoFlags.DisableFoldingBotton = false
-end
-end)
-
-FarmBotton.MouseButton1Down:Connect(function()
-if not HumanoidAction.FarmToSp then
-	if HumanoidAction.Farm then
-		FarmBotton.BackgroundColor3 = GuiColor.Base_
-		HumanoidAction.Farm = false
-	else
-		FarmBotton.BackgroundColor3 = Color3.new(0, 1, 0)
-		HumanoidAction.Farm = true
-		FarmBottonDown()
-	end
-end
-end)
-
-FarmToBotton.MouseButton1Down:Connect(function()
-if not farmBottonDown then
-	if HumanoidAction.FarmToSp then
-		FarmToBotton.BackgroundColor3 = GuiColor.Base_
-		HumanoidAction.FarmToSp = false
-		HumanoidAction.Farm = false
-	else
-		FarmToBotton.BackgroundColor3 = Color3.new(0, 1, 1)
-		HumanoidAction.FarmToSp = true
-		HumanoidAction.Farm = true
-		FarmBottonDown()
-	end
-end
-end)
-
-HomePoint.MouseButton1Down:Connect(function()
-	GoToSpawnPosition()	
-end)
-
-end)
-
-spawn(function()
-
-local MenuSet = {Row=1;Column=1;Segment=1;GapX=5;GapY=5;SizeX=70;SizeY=20}
-ButtonState.Forms(MenuSet,1,1,1)
-local FieldBotton = createButton({Size=ButtonState.Size(MenuSet),Position=ButtonState.Position(MenuSet),
-	Text="Field",Name="FieldBotton",Parent=Menu_Frame,TextSize = 14})
-ButtonState.Forms(MenuSet,2,1,1)
-local ActionsBotton = createButton({Size=ButtonState.Size(MenuSet),Position=ButtonState.Position(MenuSet),
-	Text="Actions",Name="ActionsBotton",Parent=Menu_Frame,TextSize = 14})
-ButtonState.Forms(MenuSet,3,1,1)
-local SettingsBotton = createButton({Size=ButtonState.Size(MenuSet),Position=ButtonState.Position(MenuSet),
-	Text="Settings",Name="SettingsBotton",Parent=Menu_Frame,TextSize = 14})
-
-FieldBotton.MouseButton1Down:Connect(function()displayFrame(FieldBotton,Field_Frame)end)
-ActionsBotton.MouseButton1Down:Connect(function()displayFrame(ActionsBotton,Actions_Frame)end)
-SettingsBotton.MouseButton1Down:Connect(function()displayFrame(SettingsBotton,Settings_Frame)end)
-
-local function toggleVisibleSettings_Frame(input, gameProcessed)
-	if HumanoidAction.AllStarting and input.KeyCode == Enum.KeyCode.V then
-		if not Settings_Frame.Visible then
-			displayFrame(SettingsBotton,Settings_Frame)
-			MenuBotton.BackgroundColor3 = GuiColor.On_Color_G
-			Menu_Frame.Visible = true
-		else
-			if not Menu_Frame.Visible then
-				MenuBotton.BackgroundColor3 = GuiColor.On_Color_G
-				Menu_Frame.Visible = true
-			else
-				MenuBotton.BackgroundColor3 = GuiColor.Base_
-				Menu_Frame.Visible = false
-			end
-		end
-	end
-end
-ConnectionKey.ConnectionV = game:GetService("UserInputService").InputEnded:Connect(toggleVisibleSettings_Frame)
-
-end)
-
-spawn(function()
-
-local FieldButtonSet = {Row=1;Column=1;Segment=1;GapX=4;GapY=4;SizeX=110;SizeY=16}
-ButtonState.Forms(FieldButtonSet,1,1,1)
-local SunflowerBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Sunflower Field",Name="SunflowerBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,2,1,1)
-local DandelionBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Dandelion Field",Name="DandelionBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,3,1,1)
-local MushroomBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Mushroom Field",Name="MushroomBotton",Parent=Field_Frame,TextColor3=GuiColor.Red_})
-ButtonState.Forms(FieldButtonSet,4,1,1)
-local BlueBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Blue Flower Field",Name="BlueBotton",Parent=Field_Frame,TextColor3=GuiColor.Blue_})
-ButtonState.Forms(FieldButtonSet,5,1,1)
-local CloverBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Clover Field",Name="CloverBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,6,1,2)
-local SpiderBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Spider Field",Name="SpiderBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,7,1,2)
-local StrawBerryBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Strawberry Field",Name="StrawBerryBotton",Parent=Field_Frame,TextColor3=GuiColor.Red_})
-ButtonState.Forms(FieldButtonSet,8,1,2)
-local BamBooBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Bamboo Field",Name="BamBooBotton",Parent=Field_Frame,TextColor3=GuiColor.Blue_})
-ButtonState.Forms(FieldButtonSet,9,1,2)
-local PineappleBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Pineapple Patch",Name="PineappleBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,10,1,2)
-local StumpBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Stump Field",Name="StumpBotton",Parent=Field_Frame,TextColor3=GuiColor.Blue_})
-
-ButtonState.Forms(FieldButtonSet,1,2,1)
-local RoseBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Rose Field",Name="RoseBotton",Parent=Field_Frame,TextColor3=GuiColor.Red_})
-ButtonState.Forms(FieldButtonSet,2,2,1)
-local PineTreeBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Pine Tree Forest",Name="PineTreeBotton",Parent=Field_Frame,TextColor3=GuiColor.Blue_})
-ButtonState.Forms(FieldButtonSet,3,2,1)
-local CactusBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Cactus Field",Name="CactusBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,4,2,1)
-local PumpkinBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Pumpkin Patch",Name="PumpkinBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,5,2,1)
-local MountainTopBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Mountain Top Field",Name="MountainTopBotton",Parent=Field_Frame,TextSize = 11})
-ButtonState.Forms(FieldButtonSet,6,2,2)
-local CoconutBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Coconut Field",Name="CoconutBotton",Parent=Field_Frame})
-ButtonState.Forms(FieldButtonSet,7,2,2)
-local PepperBotton = createButton({Size=ButtonState.Size(FieldButtonSet),Position=ButtonState.Position(FieldButtonSet),
-	Text="Pepper Patch",Name="PepperBotton",Parent=Field_Frame,TextColor3=GuiColor.Red_})
-
-local function segToField(field)
-	TextView.Text = field
-	tpToField()
-	setMaxMinSizeField(SizeField.distanceToBoard)
-end
-
-SunflowerBotton.MouseButton1Down:Connect(function()segToField("Sunflower Field")end)
-DandelionBotton.MouseButton1Down:Connect(function()segToField("Dandelion Field")end)
-MushroomBotton.MouseButton1Down:Connect(function()segToField("Mushroom Field")end)
-BlueBotton.MouseButton1Down:Connect(function()segToField("Blue Flower Field")end)
-CloverBotton.MouseButton1Down:Connect(function()segToField("Clover Field")end)
-SpiderBotton.MouseButton1Down:Connect(function()segToField("Spider Field")end)
-StrawBerryBotton.MouseButton1Down:Connect(function()segToField("Strawberry Field")end)
-BamBooBotton.MouseButton1Down:Connect(function()segToField("Bamboo Field")end)
-PineappleBotton.MouseButton1Down:Connect(function()segToField("Pineapple Patch")end)
-StumpBotton.MouseButton1Down:Connect(function()segToField("Stump Field")end)
-RoseBotton.MouseButton1Down:Connect(function()segToField("Rose Field")end)
-PineTreeBotton.MouseButton1Down:Connect(function()segToField("Pine Tree Forest")end)
-CactusBotton.MouseButton1Down:Connect(function()segToField("Cactus Field")end)
-PumpkinBotton.MouseButton1Down:Connect(function()segToField("Pumpkin Patch")end)
-MountainTopBotton.MouseButton1Down:Connect(function()segToField("Mountain Top Field")end)
-CoconutBotton.MouseButton1Down:Connect(function()segToField("Coconut Field")end)
-PepperBotton.MouseButton1Down:Connect(function()segToField("Pepper Patch")end)
-end)
-
-spawn(function()
-
-local xyz = CFrame.new(0, 0, 0)
-ButtonState.Forms(ButtonSet,1,1,1)
-local TestXYZBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Position XYZ",Name="TestXYZBotton",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,2,1,1)
-local TextTestX = CreateObject.CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
-	MultiLine = true,TextWrapped = true,ClearTextOnFocus = false,TextEditable = false,
-	BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
-	Text = "X",Name="TextTestX",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,3,1,1)
-local TextTestY = CreateObject.CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
-	MultiLine = true,TextWrapped = true,ClearTextOnFocus = false,TextEditable = false,
-	BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
-	Text = "Y",Name="TextTestY",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,4,1,1)
-local TextTestZ = CreateObject.CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
-	MultiLine = true,TextWrapped = true,ClearTextOnFocus = false,TextEditable = false,
-	BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
-	Text = "Z",Name="TextTestZ",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,5,1,1)
-local TPToBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Seg To",Name="TPToBotton",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,6,1,1)
-local KeyText = CreateObject.CreateInstance("TextBox",{Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Font = Enum.Font.GothamBold,TextColor3=GuiColor.Text_White_,TextSize = 12,
-	MultiLine = true,TextWrapped = false,ClearTextOnFocus = false,TextEditable = false,
-	BackgroundColor3=GuiColor.Base_,BackgroundTransparency = 0.8,BorderSizePixel=0,
-	Text = "F8, X, C, V, R.",Name="KeyText",Parent=Actions_Frame})
-
-ButtonState.Forms(ButtonSet,1,2,1)
-local FieldDecosDelBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="DecosDel",Name="FieldDecosDelBotton",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,2,2,1)
-local TPMenuLoadBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="TPMenu",Name="TPMenuLoadBotton",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,3,2,1)
-local ResetBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Reset",Name="ResetBotton",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,4,2,1)
-local FindBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Find",Name="FindBotton",Parent=Actions_Frame})
-ButtonState.Forms(ButtonSet,5,2,1)
-local CDestroyBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="CDestroy",Name="CDestroyBotton",Parent=Actions_Frame})
-
-TestXYZBotton.MouseButton1Down:Connect(function()
-	xyz = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart.CFrame
-	TextTestX.Text = xyz.X
-	TextTestY.Text = xyz.Y
-	TextTestZ.Text = xyz.Z
-end)
-
-TPToBotton.MouseButton1Down:Connect(function()
-	if	xyz.Y ~= 0 then
-		humanoidRootPart.CFrame = xyz
-	end
-end)
-
-FieldDecosDelBotton.MouseButton1Down:Connect(function()
-if	FieldDecosDelBotton.AutoButtonColor then
-	for _,v in pairs(workspace.FieldDecos:GetChildren()) do
-		v:Destroy()
-	end
-	for _,v in pairs(workspace.Decorations.Misc:GetChildren()) do
-		v:Destroy()
-	end
-	ButtonState.Off(FieldDecosDelBotton)
-end
-end)
-
-CDestroyBotton.MouseButton1Down:Connect(function()
-	for _,v in pairs(workspace.Collectibles:GetChildren()) do
-		v:Destroy()
-	end
-end)
-
-TPMenuLoadBotton.MouseButton1Down:Connect(function()
-	loadstring(game:HttpGet(('https://raw.githubusercontent.com/Status2024/LuaScripts/main/_BSS%20%E2%80%94%20Subsidiary.lua'),true))()
-end)
-
-ResetBotton.MouseButton1Down:Connect(function()
-	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
-	humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-	HumanoidAction.Pause = false
-	HumanoidAction.CapacityUnloading = false
-end)
-
-FindBotton.MouseButton1Down:Connect(function()
-ButtonState.Off(FindBotton)
-for _,v in pairs(workspace.Collectibles:GetChildren()) do
-	for _, descendant in pairs(v:GetDescendants()) do
-		if descendant.Name == "FrontDecal" then
-			if descendant.Texture == "rbxassetid://8277780065" or
-				descendant.Texture == "rbxassetid://8277778300 " or
-				descendant.Texture == "rbxassetid://1674871631" or
-				descendant.Texture == "rbxassetid://2504978518" or
-				descendant.Texture == "rbxassetid://2542899798" or
-				descendant.Texture == "rbxassetid://2584584968" or
-				descendant.Texture == "rbxassetid://6087969886" or
-				descendant.Texture == "rbxassetid://3036899811" or
-				descendant.Texture == "rbxassetid://1838129169" or
-				descendant.Texture == "rbxassetid://8277901755" or
-				descendant.Texture == "rbxassetid://8054996680" or
-				descendant.Texture == "rbxassetid://8055428094" or
-				descendant.Texture == "rbxassetid://2319943273" or
-				descendant.Texture == "rbxassetid://1471882621" or
-				descendant.Texture == "rbxassetid://2060626811" or
-				descendant.Texture == "rbxassetid://3012679515" or
-				descendant.Texture == "rbxassetid://3080740120" or
-				descendant.Texture == "rbxassetid://3030569073" or
-				descendant.Texture == "rbxassetid://2863122826" or
-				descendant.Texture == "rbxassetid://1471850677" or
-				descendant.Texture == "rbxassetid://1471849394" then
-				wait(.1)
-				if descendant.Parent.Transparency == not nil then 
-					if descendant.Parent.Transparency == 0 then
-						humanoidRootPart.CFrame = descendant.Parent.CFrame
-						wait(.5)
-						return
-					else
-						descendant.Parent:Destroy()
-					end
-				end
-			end
-		end
-	end
-end
-ButtonState.Activation(FindBotton)
-end)
-
-end)
-
-spawn(function()
-ButtonState.Forms(ButtonSet,1,1,1)
-local AutoDig = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Auto Dig",Name="AutoDig",Parent=Settings_Frame})
-ButtonState.Forms(ButtonSet,2,1,1)
-local AutoDispenser = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Auto Dispenser",Name="AutoDispenser",Parent=Settings_Frame,TextSize = 10})
-ButtonState.Forms(ButtonSet,3,1,1)
-local SpeedBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Speed: ",Name="SpeedBotton",Parent=Settings_Frame})
-ButtonState.Forms(ButtonSet,4,1,1)
-local BalloonBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Balloon",Name="BalloonBotton",Parent=Settings_Frame})
-ButtonState.Forms(ButtonSet,5,1,1)
-local AutoChristmas = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Auto Christmas",Name="AutoChristmas",Parent=Settings_Frame,TextSize = 10,Visible = true})
-ButtonState.Forms(ButtonSet,6,1,1)
-local DistanceBotton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Dist to board: ",Name="DistanceBotton",Parent=Settings_Frame,TextSize = 10})
-
-ButtonState.Forms(ButtonSet,1,2,1)
-local AutoBoost = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="ABoost",Name="AutoBoost",Parent=Settings_Frame,TextSize = 10})
-ButtonState.Forms(ButtonSet,2,2,1)
-local AutoMondo = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="AMondo",Name="AutoMondo",Parent=Settings_Frame})
-ButtonState.Forms(ButtonSet,3,2,1)
-local AutoMobs = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="AMobs",Name="AutoMobs",Parent=Settings_Frame,TextSize = 10})
-
-ButtonState.Forms(ButtonSet,2,3,1)
-local AutoTornado = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="ATornado",Name="AutoTornado",Parent=Settings_Frame,TextSize = 10})
-ButtonState.Forms(ButtonSet,3,3,1)
-local BalloonAndStart = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Balloon&Start",Name="BalloonAndStart",Parent=Settings_Frame,TextSize = 10})
-ButtonState.Forms(ButtonSet,4,3,1)
-local SnailTime = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="SnailTime",Name="SnailTime",Parent=Settings_Frame,TextSize = 10})
-
-ButtonState.Forms(ButtonSet,6,3,2)
-local DiamondMaskEquip = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Diamond Mask",Name="DiamondMaskEquip",Parent=Settings_Frame,TextSize = 10,--TextColor3=GuiColor.Text_Blue_,
-	BackgroundColor3=GuiColor.Blue_})
-ButtonState.Forms(ButtonSet,7,3,2)
-local GummyMaskEquip = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Gummy Mask",Name="GummyMaskEquip",Parent=Settings_Frame,TextSize = 10,
-	BackgroundColor3=GuiColor.Text_LBlack_})
-ButtonState.Forms(ButtonSet,8,3,2)
-local DemonMaskEquip = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Demon Mask",Name="DemonMaskEquip",Parent=Settings_Frame,TextSize = 10,--TextColor3=GuiColor.Text_Red_,
-	BackgroundColor3=GuiColor.Red_})
-
-AutoDig.MouseButton1Down:Connect(function()
-	if AutoFlags.DigBottonDown == false then
-		AutoFlags.DigBottonDown = true
-		AutoDig.BackgroundColor3 = Color3.new(0, 1, 0)
-		AutoDiging()
-	else
-		AutoFlags.DigBottonDown = false
-		AutoDig.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-AutoDispenser.MouseButton1Down:Connect(function()
-	if AutoFlags.DispenserBottonDown == false then
-		AutoFlags.DispenserBottonDown = true
-		AutoDispenser.BackgroundColor3 = Color3.new(0, 1, 0)
-		while AutoFlags.DispenserBottonDown do
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Glue Dispenser")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Wealth Clock")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Strawberry Dispenser")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Blueberry Dispenser")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Treat Dispenser")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Free Ant Pass Dispenser")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Honey Dispenser")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Free Royal Jelly Dispenser")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Gingerbread House")
-			wait(30)
-		end
-	else
-		AutoFlags.DispenserBottonDown = false
-		AutoDispenser.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-SpeedBotton.MouseButton1Down:Connect(function()
-	if HumanoidState.Speed == 0 then
-		HumanoidState.Speed = 50
-		SpeedBotton.Text = "Speed: 50"
-		SpeedBotton.BackgroundColor3 = Color3.new(0, 1, 0)
-		SpeedBottonFunction()
-	elseif HumanoidState.Speed == 50 then		
-		HumanoidState.Speed = 75
-		SpeedBotton.Text = "Speed: 75"
-		SpeedBotton.BackgroundColor3 = Color3.new(1, 1, 0)
-	elseif HumanoidState.Speed == 75 then		
-		HumanoidState.Speed = 98
-		SpeedBotton.Text = "Speed: 98"
-		SpeedBotton.BackgroundColor3 = Color3.new(1, 0, 0)
-	elseif HumanoidState.Speed == 98 then			
-		HumanoidState.Speed = 0
-		SpeedBotton.Text = "Speed: "
-		SpeedBotton.BackgroundColor3 = GuiColor.Base_
-	end
-	HumanoidState.TmpSpeed = HumanoidState.Speed
-end)
-
-BalloonBotton.MouseButton1Down:Connect(function()
-
-local balloonTracking_ = coroutine.wrap(function()
-if not ActionFlags.BalloonTrackingStarted_ then
-	ActionFlags.BalloonTrackingStarted_ = true
-	while ActionFlags.StateBalloonBotton == 1 do
-		local tmpTimeBalloonBotton_ = math.floor(time() - ActionFlags.TimeAfterBalloonUnloading)
-		if tmpTimeBalloonBotton_ >= 1500 then
-			BackpackBalloonUnloading()
-			wait(.05)
-		end
-		wait(10)
-	end
-	ActionFlags.BalloonTrackingStarted_ = false
-end
-end)
-
-local balloonTracking = coroutine.wrap(function()
-if not ActionFlags.BalloonTrackingStarted then
-	ActionFlags.BalloonTrackingStarted = true
-	print("Balloon tracking started")
-	while ActionFlags.StateBalloonBotton == 2 do
-		local tmpTimeBalloonBotton_ = math.floor(time() - ActionFlags.TimeAfterBalloonUnloading)
-		if tmpTimeBalloonBotton_ <= 1800  then
-			ActionFlags.BalloonBottonDown = false
-		elseif tmpTimeBalloonBotton_ > 1800 and
-			tmpTimeBalloonBotton_ < 2700 then
-			ActionFlags.BalloonBottonDown = true
-		elseif tmpTimeBalloonBotton_ >= 2700 then
-			ActionFlags.BalloonBottonDown = true
-			BackpackBalloonUnloading()
-			wait(.05)
-			ActionFlags.BalloonBottonDown = false
-		end
-		wait(10)
-	end
-	print("Balloon tracking stoped")
-	ActionFlags.BalloonTrackingStarted = false
-end
-end)
-
-	if ActionFlags.StateBalloonBotton == 0 then
-		ActionFlags.BalloonBottonDown = true
-		BalloonBotton.BackgroundColor3 = Color3.new(0, 1, 0)
-		ActionFlags.StateBalloonBotton = 1	
-		TimeAfterBalloonUnloading()
-		balloonTracking_()
-	elseif ActionFlags.StateBalloonBotton == 1 then
-		ActionFlags.BalloonBottonDown = false
-		BalloonBotton.Text = "Balloon:30-45"
-		BalloonBotton.TextSize = 10
-		BalloonBotton.BackgroundColor3 = Color3.new(1, 1, 0)
-		ActionFlags.StateBalloonBotton = 2
-		TimeAfterBalloonUnloading()
-		balloonTracking()
-	elseif ActionFlags.StateBalloonBotton == 2 then
-		ActionFlags.BalloonBottonDown = false
-		BalloonBotton.BackgroundColor3 = GuiColor.Base_
-		BalloonBotton.Text = "Balloon"
-		BalloonBotton.TextSize = 12
-		ActionFlags.StateBalloonBotton = 0
-	end
-end)
-
-DistanceBotton.MouseButton1Down:Connect(function()
-	if SizeField.distanceToBoard == 5 then
-		SizeField.distanceToBoard = 30
-		DistanceBotton.Text = "Dist to board: 30"
-		DistanceBotton.BackgroundColor3 = Color3.new(0, 1, 0)
-	else			
-		SizeField.distanceToBoard = 5
-		DistanceBotton.Text = "Dista to board: "
-		DistanceBotton.BackgroundColor3 = GuiColor.Base_
-	end
-	setMaxMinSizeField(SizeField.distanceToBoard)
-end)
-
-AutoBoost.MouseButton1Down:Connect(function()
-	if AutoFlags.BoostBottonDown == false then
-		AutoFlags.BoostBottonDown = true
-		AutoBoost.BackgroundColor3 = Color3.new(0, 1, 0)
-		while AutoFlags.BoostBottonDown do	
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Red Field Booster")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Blue Field Booster")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Field Booster")
-			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Coconut Dispenser")
-			wait(120)
-		end
-	else
-		AutoFlags.BoostBottonDown = false
-		AutoBoost.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-AutoMobs.MouseButton1Down:Connect(function()
-	if not AutoFlags.MobsBottonDown then
-		AutoFlags.MobsBottonDown = true
-		AutoMobs.BackgroundColor3 = Color3.new(0, 1, 0)
-		AutoMobsKillFunction()
-	else
-		AutoFlags.MobsBottonDown = false
-		AutoMobs.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-AutoVicious.MouseButton1Down:Connect(function()
-	if not AutoFlags.ViciousBottonDown then
-		AutoFlags.ViciousBottonDown = true
-		AutoVicious.BackgroundColor3 = Color3.new(0, 1, 0)
-	else
-		AutoFlags.ViciousBottonDown = false
-		AutoVicious.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-AutoWindy.MouseButton1Down:Connect(function()
-	if not AutoFlags.WindyBottonDown then
-		AutoFlags.WindyBottonDown = true
-		AutoWindy.BackgroundColor3 = Color3.new(0, 1, 0)
-	else
-		AutoFlags.WindyBottonDown = false
-		AutoWindy.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-AutoStickBug.MouseButton1Down:Connect(function()
-	if not AutoFlags.StickBugBottonDown then
-		AutoFlags.StickBugBottonDown = true
-		AutoStickBug.BackgroundColor3 = Color3.new(0, 1, 0)
-	else
-		AutoFlags.StickBugBottonDown = false
-		AutoStickBug.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-AutoMondo.MouseButton1Down:Connect(function()
-	if not AutoFlags.MondoBottonDown then
-		AutoFlags.MondoBottonDown = true
-		AutoMondo.BackgroundColor3 = Color3.new(0, 1, 0)
-	else
-		AutoFlags.MondoBottonDown = false
-		AutoMondo.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-AutoTornado.MouseButton1Down:Connect(function()
-local TornadoControl = coroutine.wrap(function()
-	local tweenservice_ = game:GetService("TweenService")
-	local item_ = {}
-	while AutoFlags.TornadoBottonDown do
-		while HumanoidAction.Pause or HumanoidAction.CapacityUnloading or not HumanoidAction.Farm do
-			wait(1)
-		end
-		for _,tornado_ in pairs(game.workspace.Particles:GetDescendants()) do
-			if tornado_.Name == "Root" or tornado_.Name == "Plane" then
-				if SizeField.min_X < tornado_.Position.x and tornado_.Position.x < SizeField.max_X
-					and SizeField.min_Z < tornado_.Position.z and tornado_.Position.z < SizeField.max_Z then
-					if (v.Position.x > SizeField.min_X) and (v.Position.x < SizeField.max_X) and (v.Position.z > SizeField.min_Z) and (v.Position.z < SizeField.max_Z) then
-					if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then
-						if not AutoFlags.TornadoBottonDown then return end
-						item_.CFrame = CFrame.new(v.Position.x, tornado_.Position.y, v.Position.z)
-						local Tween = tweenservice_:Create(tornado_, info_, item_)
-						Tween:Play()
-						wait(.1)
-					end
-					end
-					end
-				end
-			end
-		end
-		wait(.2)
-	end
-end)
-
-if AutoFlags.TornadoBottonDown == false then
-	AutoFlags.TornadoBottonDown = true
-	AutoTornado.BackgroundColor3 = Color3.new(0, 1, 0)
-	TornadoControl()
-else
-	AutoFlags.TornadoBottonDown = false
-	AutoTornado.BackgroundColor3 = GuiColor.Base_
-end
-end)
-
-AutoMushrooms.MouseButton1Down:Connect(function()
-	if AutoFlags.MushroomsBottonDown == false then
-		AutoFlags.MushroomsBottonDown = true
-		AutoMushrooms.BackgroundColor3 = Color3.new(0, 1, 0)
-	else
-		AutoFlags.MushroomsBottonDown = false
-		AutoMushrooms.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-DiamondMaskEquip.MouseButton1Down:Connect(function()
-	game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-		{["Mute"] = true, ["Type"] = "Diamond Mask", ["Category"] = "Accessory"})
-	TPTopButton.BackgroundColor3 = Color3.new(0.32, 0.4, 1)
-	TPPepButton.BackgroundColor3 = Color3.new(0.32, 0.4, 1)
-	HumanoidState.MaskEquipped = 2
-end)
-
-GummyMaskEquip.MouseButton1Down:Connect(function()
-	game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-		{["Mute"] = true, ["Type"] = "Gummy Mask", ["Category"] = "Accessory"})
-	TPTopButton.BackgroundColor3 = Color3.new(1, 1, 1)
-	TPPepButton.BackgroundColor3 = Color3.new(1, 1, 1)
-	HumanoidState.MaskEquipped = 1
-end)
-
-DemonMaskEquip.MouseButton1Down:Connect(function()
-	game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-		{["Mute"] = true, ["Type"] = "Demon Mask", ["Category"] = "Accessory"})
-	TPTopButton.BackgroundColor3 = Color3.new(1, 0.2, 0,06)
-	TPPepButton.BackgroundColor3 = Color3.new(1, 0.2, 0,06)
-	HumanoidState.MaskEquipped = 3
-end)
-
-SnailTime.MouseButton1Down:Connect(function()
-
-local function snailTimeDecrease()
-	print("Snail Time Decrease Started")
-	while ActionFlags.SnailTimeBottonDown >= 1 do
-		ActionFlags.SnailTimeBottonDown = ActionFlags.SnailTimeBottonDown - 1	
-		SnailTime.Text = "SnailTime "..ActionFlags.SnailTimeBottonDown
-		for count = 1, 60 do
-			if ActionFlags.SnailTimeBottonDown == 0 then break end
-			wait(1)
-		end
-		for _,v in pairs(game.workspace.Monsters:GetChildren()) do
-			if not string.find(v.Name,"Snail") and
-				(humanoidRootPart.Position - fieldPosition).magnitude < 50 then
-				ActionFlags.SnailTimeBottonDown = 0
-			end			
-		end
-	end
-	if ActionFlags.SnailTimeBottonDown < 0 then ActionFlags.SnailTimeBottonDown = 0 end
-	SnailTime.Text = "SnailTime"
-	SnailTime.BackgroundColor3 = GuiColor.Base_
-	
-	game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-		{["Mute"] = true, ["Type"] = "Diamond Mask", ["Category"] = "Accessory"})
-	TPPepButton.BackgroundColor3 = Color3.new(0.32, 0.4, 1)
-	DistanceBotton.BackgroundColor3 = GuiColor.Base_
-	setMaxMinSizeField(5)
-	print("Snail Time Decrease Stoped")
-end
-
-	if ActionFlags.SnailTimeBottonDown == 0 then
-		ActionFlags.SnailTimeBottonDown = 30
-		SnailTime.Text = "SnailTime "..ActionFlags.SnailTimeBottonDown
-		SnailTime.BackgroundColor3 = Color3.new(0, 1, 0)
-		
-		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-			{["Mute"] = true, ["Type"] = "Demon Mask", ["Category"] = "Accessory"})
-		TPPepButton.BackgroundColor3 = Color3.new(1, 0.2, 0,06)
-		DistanceBotton.BackgroundColor3 = Color3.new(0, 1, 0)
-		setMaxMinSizeField(30)
-		snailTimeDecrease()
-	elseif ActionFlags.SnailTimeBottonDown <= 450 then
-		ActionFlags.SnailTimeBottonDown = ActionFlags.SnailTimeBottonDown + 30
-		SnailTime.Text = "SnailTime "..ActionFlags.SnailTimeBottonDown
-	else
-		ActionFlags.SnailTimeBottonDown = 0
-	end
-end)
-
-BalloonAndStart.MouseButton1Down:Connect(function()
-	BalloonAndStart.BackgroundColor3 = Color3.new(1, 1, 0)
-	FarmBotton.BackgroundColor3 = Color3.new(1, 0, 0)
-	HumanoidAction.Farm = true
-	
-	ActionFlags.BalloonBottonDown = true
-	BackpackBalloonUnloading()
-	wait(.5)
-	if ActionFlags.StateBalloonBotton == 2 or ActionFlags.StateBalloonBotton == 0 then ActionFlags.BalloonBottonDown = false end
-	
-	FarmBotton.BackgroundColor3 = Color3.new(0, 1, 0)
-	FarmBottonDown()
-	BalloonAndStart.BackgroundColor3 = GuiColor.Base_
-end)
-
-AutoChristmas.MouseButton1Down:Connect(function()
-
-local function Collect_Dist20()
-	local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-	for k,v in pairs(workspace.Collectibles:GetChildren()) do
-	if tostring(v) == tostring(game.Players.LocalPlayer.Name) or tostring(v) == "C" then
-	if (v.Position - humanoidRootPart.Position).magnitude <= 20 then
-	if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
-	if AutoFlags.ChristmasBottonDown	then
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
-		wait(.5)
-	else
-		break
-	end
-	end
-	end
-	end
-	end
-end
-
-local CollectionChristmas = coroutine.wrap(function()
-while AutoFlags.ChristmasBottonDown do
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(10)
-	end
-	print("Collection Christmas STARTing")
-	HumanoidAction.Pause = true
-	wait(7)
-	humanoidRootPart.CFrame = CFrame.new(-403.2, 48, 280.2)
-	wait(1)
-	game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Honeyday Candles")
-	wait(7)
-	humanoidRootPart.CFrame = CFrame.new(421, 132, -333)
-	wait(1)
-	game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Samovar")
-	wait(9)
-	for count = 1, 11 do wait(.3) Collect_Dist20() end
-	if not AutoFlags.ChristmasBottonDown then HumanoidAction.Pause = false break end
-	wait(1)
-	humanoidRootPart.CFrame = CFrame.new(36, 236, -512)
-	wait(1)
-	game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Onett's Lid Art")
-	wait(7)
-	for count = 1, 3 do	Collect_Dist20()	end
-	if not AutoFlags.ChristmasBottonDown then HumanoidAction.Pause = false break end	
-	wait(1)
-	humanoidRootPart.CFrame = CFrame.new(-105, 129, -114)
-	wait(1)
-	game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Beesmas Feast")
-	wait(5)
-	for count = 1, 3 do	Collect_Dist20()	end
-	wait(1)
-	if not AutoFlags.ChristmasBottonDown then HumanoidAction.Pause = false break end	
-	if HumanoidAction.Farm == true then tpToField()
-		else GoToSpawnPosition() end
-	wait(5)
-	HumanoidAction.Pause = false
-	for ho = 1, 2 do
-		for mi = 1, 60 do
-			for delta = 1, 3 do
-				wait(20)
-				if not AutoFlags.ChristmasBottonDown then break end
-			end
-		end
-		print("Collection Christmas 1 h")
-	end	
-end
-	print("Collection Christmas STOPed")
-end)
-
-	if AutoFlags.ChristmasBottonDown == false then
-		AutoFlags.ChristmasBottonDown = true
-		AutoChristmas.BackgroundColor3 = Color3.new(0, 1, 0)
-		CollectionChristmas()
-	else
-		AutoFlags.ChristmasBottonDown = false
-		AutoChristmas.BackgroundColor3 = GuiColor.Base_
-	end
-end)
-
-end)
-
+------------------Waypoints------------------
 Waypoints = { 
-["Sunflower Field"] = CFrame.new(-208, 4, 185),
-["Dandelion Field"] = CFrame.new(-30, 4, 225),
-["Mushroom Field"] = CFrame.new(-94, 5, 116),
-["Blue Flower Field"] = CFrame.new(113.7, 4, 101.5),
-["Clover Field"] = CFrame.new(174, 34, 189),
-["Spider Field"] = CFrame.new(-57.2, 20, -5.3),
-["Strawberry Field"] = CFrame.new(-169.3, 20, -3.2),
-["Bamboo Field"] = CFrame.new(93, 20, -25),
-["Pineapple Patch"] = CFrame.new(262, 68, -201),
-["Stump Field"] = CFrame.new(420,97,-178),
-["Rose Field"] = CFrame.new(-322, 20, 124),
-["Pine Tree Forest"] = CFrame.new(-318, 68, -195),
-["Cactus Field"] = CFrame.new(-194, 68, -107),
-["Pumpkin Patch"] = CFrame.new(-194, 68, -182),
-["Mountain Top Field"] = CFrame.new(76, 176, -181),
-["Coconut Field"] = CFrame.new(-255, 72, 459),
-["Pepper Patch"] = CFrame.new(-486, 124, 517),
---["AntField"]
-["Tool Shop"] = CFrame.new(86, 4.6, 294),
-["Tool Shop 2"] = CFrame.new(165, 69, -161),
-["MountainTop Shop"] = CFrame.new(-18, 176, -137),
-["Mental Shop"] = CFrame.new(-497.8, 51.7, 469),
-["Bee Shop"] = CFrame.new(-136.8, 4.6, 243.4),
-["Treat Shop"] = CFrame.new(-233.3, 5.5, 89),
-["Ticket Shop"] = CFrame.new(-12.8, 184, -222.2),
-["RoyalJelly Shop"] = CFrame.new(-297, 53, 68),
-["Ticket RoyalJelly Shop"] = CFrame.new(81, 18, 240),
+	["Star Room"] = CFrame.new(135.9, 64.6, 322.1),
+	["Home 1"] = CFrame.new(-185, 4.4, 331),
+	["Home 2"] = CFrame.new(-151.5, 4.4, 331),
+	["Home 3"] = CFrame.new(-118, 4.4, 331),
+	["Home 4"] = CFrame.new(-84.5, 4.4, 331),
+	["Home 5"] = CFrame.new(-51, 4.4, 331),
+	["Home 6"] = CFrame.new(-17.5, 4.4, 331)}	
 
-["Honey Convertor 1"] = CFrame.new(-146.7, 4.6, 194.6),
-["Honey Convertor 2"] = CFrame.new(140.4, 182.2, -217.2),
-["Honey Convertor 3"] = CFrame.new(282.3, 68.5, -64.3),
+--===================Установки=====================--
+local function setSpeed()
+	HumanoidState.Speed = 89
+	buttonSpeed.Text = "Speed: "..HumanoidState.Speed
+	buttonSpeed.BackgroundColor3 = GuiColor.On_Color_R
+	HumanoidState.TmpSpeed = HumanoidState.Speed
+	coroutine.wrap(WRP.applySpeed)()
+end
 
-["Diamond Mask"] = CFrame.new(-336,133,-387),
-["Gummy Mask"] = CFrame.new(272,25268,-773),
-["Demonm Mask"] = CFrame.new(291,28,271),
+local function onTracking()
+	AutoFlags.TrackingBottonDown=true
+	buttonAutoTracking.BackgroundColor3 = GuiColor.On_Color_G
+	coroutine.wrap(trackingFunction)()
+end
 
-["Honeystorm Dispensor"] = CFrame.new(238.4, 33.3, 165.6),
-["Blueberry Dispenser"] = CFrame.new(308.3, 4.8, 136.6),
-["Strawberry Dispenser"] = CFrame.new(-320.5, 46, 272.5),
-["Glue Dispenser"] = CFrame.new(271.7, 25257.2, -720.6),
-["Sprout Dispenser"] = CFrame.new(-269.26, 26.56, 267.31),
-["Gumdrop Dispenser"] = CFrame.new(66, 21.5, 26.4),
-["Treat Dispenser"] = CFrame.new(193.9, 68, -123),
-["Coconut Dispenser"] = CFrame.new(-176, 73.2, 534),
+switchMask("Red")
+setSpeed()
+onTracking()
+		
+	--AutoFlags.MushroomsBottonDown = true
+	--buttonAutoMushrooms.BackgroundColor3 = uiColor.On_Color_G
 
-["Redfield Boost"] = CFrame.new(-318, 21, 242),
-["Bluefield Boost"] = CFrame.new(272, 58.4, 85.4),
-["MountainTop Boost"] = CFrame.new(-40, 176, -191.7),
 
-["Night Match"] = CFrame.new(-17.2, 312.7, -270.1),
-["Extreme Match"] = CFrame.new(-405,112,545),
-["Mega Match"] = CFrame.new(-429, 69.8, -54),
-["Memory Match"] = CFrame.new(135.9, 68.7, -96),
+	--textView.Text = "Stump Field"
+	--textView.Text = "Pepper Patch"
+	--setBordersField(BordersField.distanceToBoard)
 
-["King Beetle"] = CFrame.new(218, 3, 140),
-["Tunnel Bear"] = CFrame.new(507.3, 5.7, -45.7),
-["Snail"] = CFrame.new(420, 117,-178),
-["Comandor"] = CFrame.new(520.7, 47, 162),
-
-["Star Room"] = CFrame.new(135.9, 64.6, 322.1),
-["Wealth Clock"] = CFrame.new(333, 48.7, 190),
-["Blender"] = CFrame.new(-426,70,38),
-["Moon"] = CFrame.new(21,88,-54),
-["Ant"] = CFrame.new(93,34,502),
-
-["Red Clubhouse"] = CFrame.new(-334, 21, 216),
-["Blue Clubhouse"] = CFrame.new(292, 4, 98),
-["Club Honey"] = CFrame.new(44.8, 5, 319.6),
-["Onett"] = CFrame.new(-8.4, 234, -517.9),
-["Planter Shop"] = CFrame.new(520.7, 138.2, -325.7),
-["Top"] = CFrame.new(37.4, 429, -258),
-
-["Polar Bear"] = CFrame.new(-109, 119.6, -78),
-["Black Bear"] = CFrame.new(-255, 5.5, 295),
-["Brown Bear"] = CFrame.new(280, 46.1, 238),
-["Riley Bee"] = CFrame.new(-360, 73.8, 214),
-["Bucko Bee"] = CFrame.new(304, 62, 105),
-["Stick Bug"] = CFrame.new(-128,50,147),
-["Windy Shrine"] = CFrame.new(-486,142,410),
-
-["Home 1"] = CFrame.new(-185, 4.4, 331),
-["Home 2"] = CFrame.new(-151.5, 4.4, 331),
-["Home 3"] = CFrame.new(-118, 4.4, 331),
-["Home 4"] = CFrame.new(-84.5, 4.4, 331),
-["Home 5"] = CFrame.new(-51, 4.4, 331),
-["Home 6"] = CFrame.new(-17.5, 4.4, 331),
-}	
-
-game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip",
-{["Mute"] = true, ["Type"] = "Diamond Mask", ["Category"] = "Accessory"})
-TPTopButton.BackgroundColor3 = Color3.new(0.32, 0.4, 1)
-TPPepButton.BackgroundColor3 = Color3.new(0.32, 0.4, 1)
-HumanoidState.MaskEquipped = 2
-vu = game:GetService("VirtualUser")
-game:GetService("Players").LocalPlayer.Idled:connect(function()
-	vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-	wait(1)
-	vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
+	
+	
+	-- not
+	--game:GetService("ReplicatedStorage").Events.RoboBearReroll:FireServer()
+	--game:GetService("ReplicatedStorage").Events.RoboBearRoundEnd:FireServer()
+	--game:GetService("ReplicatedStorage").Events.RoboBearUpgradeSelect:FireServer("")
+	--game:GetService("ReplicatedStorage").Events.RoboBearQuestSelect:FireServer("")
+	--game:GetService("ReplicatedStorage").Events.StickerStackActivate:FireServer("Chef Hat Polar Bear Sticker")
+	--loadstring(game:HttpGet(('https://raw.githubusercontent.com/Status2024/LuaScripts/refs/heads/main/_BSS%20%E2%80%94%20Subsidiary.lua'),true))()
