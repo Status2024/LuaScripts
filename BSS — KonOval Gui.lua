@@ -1,4 +1,4 @@
---BSS — Trible3_work___
+--_BSS—Foble_work
 --frm mnd mrsh crsms wnd vcs mbs ld tkt
 --mrsh wnd vcs spdReb digReb humReb
 --  Перебрали trackingFunction, Rebut
