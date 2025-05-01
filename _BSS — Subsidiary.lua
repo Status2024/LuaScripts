@@ -479,9 +479,7 @@ local demonmMaskButton = createButton({Size=ButtonState.Size(ButtonSet),Position
 ButtonState.Forms(ButtonSet,10,1,1)
 local diamondMaskButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 	Text="Diamond Mask",Name="diamondMaskButton",Parent=tp_3Frame,TextColor3=GuiColor.Text_Blue_})
-ButtonState.Forms(ButtonSet,11,1,1)
-local printerButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-	Text="Printer",Name="printerButton",Parent=tp_3Frame})
+
 	
 starRoomButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Star Room"] end)
 wealthClockButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Wealth Clock"] end)
@@ -493,7 +491,6 @@ topTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoint
 gummyMaskButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Gummy Mask"] end)
 diamondMaskButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Diamond Mask"] end)
 demonmMaskButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Demonm Mask"] end)
-printerButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Sticker Printer"] end)
 
 end)
 
@@ -589,7 +586,10 @@ local mountainTopBoostTPButton = createButton({Size=ButtonState.Size(ButtonSet),
 ButtonState.Forms(ButtonSet,12,1,1)
 local stickerTPButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 	Text="Sticker",Name="stickerTPButton",Parent=matchFrame})
-
+ButtonState.Forms(ButtonSet,13,1,1)
+local printerTPButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+	Text="Printer",Name="printerTPButton",Parent=matchFrame})
+	
 extremeMatchTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Extreme Match"] end)
 nightMatchTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Night Match"] end)
 megaMatchTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Mega Match"] end)
@@ -602,6 +602,7 @@ redFieldBoostTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame 
 blueFieldBoostTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Bluefield Boost"] end)
 mountainTopBoostTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["MountainTop Boost"] end)
 stickerTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = CFrame.new(-419,112,-149) end)
+printerTPButton.MouseButton1Up:Connect(function() humanoidRootPart.CFrame = Waypoints["Sticker Printer"] end)
 
 end)
 
@@ -698,20 +699,19 @@ local roboR10Button = createButton({Size=ButtonState.Size(ButtonSet1),Position=B
 ButtonState.Forms(ButtonSet1,9,1,2)
 local roboR13Button = createButton({Size=ButtonState.Size(ButtonSet1),Position=ButtonState.Position(ButtonSet1),
 	Text="R13-16",Name="roboR13Button",Parent=useFrame,TextColor3=GuiColor.Text_Red_})
-	
-ButtonState.Forms(ButtonSet1,10,1,2)
-local robo17Button = createButton({Size=ButtonState.Size(ButtonSet1),Position=ButtonState.Position(ButtonSet1),
-	Text="R17-18",Name="robo17Button",Parent=useFrame,TextColor3=GuiColor.Text_LWhite_})
-ButtonState.Forms(ButtonSet1,11,1,2)
-local robo19Button = createButton({Size=ButtonState.Size(ButtonSet1),Position=ButtonState.Position(ButtonSet1),
-	Text="R19-20",Name="robo19Button",Parent=useFrame,TextColor3=GuiColor.Text_LWhite_})
-
 ButtonState.Forms(ButtonSet1,8,2,2)
 local roboB10Button = createButton({Size=ButtonState.Size(ButtonSet1),Position=ButtonState.Position(ButtonSet1),
 	Text="R10-12",Name="roboB10Button",Parent=useFrame,TextColor3=GuiColor.Text_Blue_})
 ButtonState.Forms(ButtonSet1,9,2,2)
 local roboB13Button = createButton({Size=ButtonState.Size(ButtonSet1),Position=ButtonState.Position(ButtonSet1),
 	Text="R13-16",Name="roboB13Button",Parent=useFrame,TextColor3=GuiColor.Text_Blue_})
+
+ButtonState.Forms(ButtonSet1,10,1,2)
+local robo17Button = createButton({Size=ButtonState.Size(ButtonSet1),Position=ButtonState.Position(ButtonSet1),
+	Text="R17-18",Name="robo17Button",Parent=useFrame})
+ButtonState.Forms(ButtonSet1,11,1,2)
+local smoothieButton = createButton({Size=ButtonState.Size(ButtonSet1),Position=ButtonState.Position(ButtonSet1),
+	Text="Super",Name="robo19Button",Parent=useFrame})
 
 ButtonState.Forms(ButtonSet1,8,3,2)
 local whiteDriveButton = createButton({Size=ButtonState.Size(ButtonSet2),Position=ButtonState.Position(ButtonSet1),
@@ -782,12 +782,6 @@ local function eventP()
 	event("Enzymes")
 	event("Tropical Drink")
 	event("Purple Potion")
-end
-local function eventS()
-	--event("Oil")
-	event("Enzymes")
-	event("Tropical Drink")
-	event("Super Smoothie")
 end
 
 local function triggeringEvent(button,comand,count,delay)
@@ -865,11 +859,10 @@ roboB10Button.MouseButton1Up:Connect(function()
 	eventB10()end)
 roboB13Button.MouseButton1Up:Connect(function()
 	eventB13()end)
-
 robo17Button.MouseButton1Up:Connect(function()
 	eventP()end)
-robo19Button.MouseButton1Up:Connect(function()
-	eventS()end)
+smoothieButton.MouseButton1Up:Connect(function()
+	event("Super Smoothie")end)
 	
 whiteDriveButton.MouseButton1Up:Connect(function()
 	event("White Drive")end)
