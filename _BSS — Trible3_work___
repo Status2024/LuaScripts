@@ -1,6 +1,6 @@
 --BSS — Trible3_work___
 --frm mnd mrsh crsms wnd vcs mbs ld tkt
---mrsh wnd vcs spdReb digReb humReb
+--mrsh wnd vcs
 
 local timeAfte_ = .1
 local timtDiging_ = 1--.3
@@ -113,16 +113,16 @@ local FieldButtonSet = {Row=1;Column=1;Segment=1;GapX=4;GapY=4;SizeX=110;SizeY=2
 local MenuSet = {Row=1;Column=1;Segment=1;GapX=5;GapY=5;SizeX=70;SizeY=24}
 
 createGui = function()-----createGui-----
-	local xxxl_GUI = CreateInstance("ScreenGui",{DisplayOrder=0,Enabled=true,ResetOnSpawn=true,
-		Name="[xxxl_GUI]MainGUI"})
+	local KonOvalGUI = CreateInstance("ScreenGui",{DisplayOrder=0,Enabled=true,ResetOnSpawn=true,
+		Name="[KonOvalGUI]MainGUI"})
 
 	local dark_Frame = CreateInstance("Frame",{Active=false, Selectable=false, Draggable=false,
 		BackgroundColor3=GuiColor.Text_Black_,Transparency=1,BorderSizePixel=0,
-		Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 0, 0, -60),Name="dark_Frame",Parent=xxxl_GUI})
+		Size=UDim2.new(0, 1, 0, 1),Position=UDim2.new(0, 0, 0, -60),Name="dark_Frame",Parent=KonOvalGUI})
 
 	local start_Frame = CreateInstance("Frame",{Active=true, Selectable=true, Draggable=true,
 		BackgroundColor3=GuiColor.Text_Black_,Transparency=1,BorderSizePixel=0,
-		Size=UDim2.new(0, 230, 0, 70),Position=UDim2.new(0.01, 0, 0.18, 0),Name="start_Frame",Parent=xxxl_GUI})	
+		Size=UDim2.new(0, 230, 0, 70),Position=UDim2.new(0.01, 0, 0.18, 0),Name="start_Frame",Parent=KonOvalGUI})	
 	local main_Frame = CreateInstance("Frame",{Active=true, Selectable=true,
 		BackgroundColor3=GuiColor.Base_,Transparency=0.8,BorderSizePixel=0,
 		Size=UDim2.new(0, 220, 0, 60),Position=UDim2.new(0, 5, 0, 5),Name="main_Frame",Parent=start_Frame})
@@ -154,8 +154,8 @@ createGui = function()-----createGui-----
 	local buttonTPWindy = CreateButton({Size=UDim2.new(0, 25, 0, 12),Position=UDim2.new(0, 160, 0, 17),
 		Text="Windy",Name="buttonTPWindy",Parent=main_Frame,TextSize=4,
 		Visible=false,BackgroundColor3=GuiColor.Color_LBlack_})
-	local seeMushroomButton = CreateButton({Size=UDim2.new(0, 25, 0, 24),Position=UDim2.new(0, 160, 0, 34),
-		Text="0",Name="seeMushroomButton",Parent=main_Frame,TextSize = 16})
+	local buttonSeeMushroom = CreateButton({Size=UDim2.new(0, 25, 0, 24),Position=UDim2.new(0, 160, 0, 34),
+		Text="0",Name="buttonSeeMushroom",Parent=main_Frame,TextSize = 16})
 	local buttonMenu = CreateButton({Size=UDim2.new(0, 30, 0, 24),Position=UDim2.new(0, 5, 0, 34),
 		Text=">>",Name="buttonMenu",Parent=main_Frame,TextSize = 14})
 	local buttonFarm = CreateButton({Size=UDim2.new(0, 34, 0, 24),Position=UDim2.new(0, 85, 0, 34),
@@ -182,12 +182,12 @@ createGui = function()-----createGui-----
 	local buttonAutoStickBug = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="AStickBug",Name="buttonAutoStickBug",Parent=settings_Frame,TextSize = 10})
 		
-	return xxxl_GUI
+	return KonOvalGUI
 end
 
-local XXXLGui = createGui()
-local dark_Frame = XXXLGui:WaitForChild("dark_Frame")
-local start_Frame = XXXLGui:WaitForChild("start_Frame")
+local K_o_n_O_v_a_l_Gui = createGui()
+local dark_Frame = K_o_n_O_v_a_l_Gui:WaitForChild("dark_Frame")
+local start_Frame = K_o_n_O_v_a_l_Gui:WaitForChild("start_Frame")
 local main_Frame = start_Frame:WaitForChild("main_Frame")
 local menu_Frame = start_Frame:WaitForChild("menu_Frame")
 local field_Frame = menu_Frame:WaitForChild("field_Frame")
@@ -198,7 +198,7 @@ local buttonTPTop = main_Frame:WaitForChild("buttonTPTop")
 local buttonTPPep = main_Frame:WaitForChild("buttonTPPep")
 local buttonTPVicious = main_Frame:WaitForChild("buttonTPVicious")
 local buttonTPWindy = main_Frame:WaitForChild("buttonTPWindy")
-local seeMushroomButton = main_Frame:WaitForChild("seeMushroomButton")
+local buttonSeeMushroom = main_Frame:WaitForChild("buttonSeeMushroom")
 local textView = main_Frame:WaitForChild("textView")
 local buttonMenu = main_Frame:WaitForChild("buttonMenu")
 local buttonFarm = main_Frame:WaitForChild("buttonFarm")
@@ -210,7 +210,8 @@ local buttonAutoVicious = settings_Frame:WaitForChild("buttonAutoVicious")
 local buttonAutoWindy = settings_Frame:WaitForChild("buttonAutoWindy")
 local buttonAutoStickBug = settings_Frame:WaitForChild("buttonAutoStickBug")
 
-XXXLGui.Parent = game.CoreGui
+--K_o_n_O_v_a_l_Gui.Parent = game.Players.LocalPlayer.PlayerGui
+K_o_n_O_v_a_l_Gui.Parent = game.CoreGui
 
 local ConnectionKey = {ConnectionT,ConnectionCV,ConnectionRX,VirtualUserActive}
 local HumanoidState = {Speed=0,TmpSpeed=0,SetMask=0}
@@ -598,6 +599,7 @@ local function switchMask(object)---+++
 		local function white() mask = "Gummy Mask" color = Color3.new(1, 1, 1) end
 		local function blue() mask = "Diamond Mask" color = Color3.new(0.32, 0.4, 1) end
 		local function red() mask = "Demon Mask" color = Color3.new(1, 0.2, 0,06) end
+		local function honey() mask = "Honey Mask" color = Color3.new(1, 1, 0,2) end
 
 		if number == 1 then
 			white()
@@ -605,6 +607,8 @@ local function switchMask(object)---+++
 			blue()
 		elseif number == 3 then
 			red()
+		elseif number == 4 then
+			honey()
 		elseif number == 0 then
 			if HumanoidState.SetMask == 3 then red()
 			else blue() end
@@ -684,6 +688,8 @@ local function switchMask(object)---+++
 			HumanoidState.SetMask = 2
 		elseif object == "Red" then
 			HumanoidState.SetMask = 3
+		elseif object == "Honey" then
+			HumanoidState.SetMask = 4
 		else
 			return
 		end
@@ -940,37 +946,37 @@ local Auto = {
 			end
 		end
 		if detectMaxClassMushroom_ == 0 then
-			seeMushroomButton.BackgroundColor3 = GuiColor.Base_
+			buttonSeeMushroom.BackgroundColor3 = GuiColor.Base_
 			if not AutoFlags.MushroomsBottonDown then
 				buttonAutoMushrooms.BackgroundColor3 = GuiColor.Base_ end
 		elseif detectMaxClassMushroom_ == 1 then
-			seeMushroomButton.BackgroundColor3 = Color3.new(0.5, 0.25, 0.25)	-- коричневый
+			buttonSeeMushroom.BackgroundColor3 = Color3.new(0.5, 0.25, 0.25)	-- коричневый
 			if not AutoFlags.MushroomsBottonDown then
 				buttonAutoMushrooms.BackgroundColor3 = Color3.new(0.5, 0.25, 0.25) end
 		elseif detectMaxClassMushroom_ == 2 then
-			seeMushroomButton.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75)	-- серый
+			buttonSeeMushroom.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75)	-- серый
 			if not AutoFlags.MushroomsBottonDown then
 				buttonAutoMushrooms.BackgroundColor3 = Color3.new(0.75, 0.75, 0.75) end
 		elseif detectMaxClassMushroom_ == 3 then
-			seeMushroomButton.BackgroundColor3 = Color3.new(1, 1, 0)	-- желтый
+			buttonSeeMushroom.BackgroundColor3 = Color3.new(1, 1, 0)	-- желтый
 			if not AutoFlags.MushroomsBottonDown then
 				buttonAutoMushrooms.BackgroundColor3 = Color3.new(1, 1, 0) end
 		elseif detectMaxClassMushroom_ == 4 then
-			seeMushroomButton.BackgroundColor3 = Color3.new(0, 1, 1)	-- голубой
+			buttonSeeMushroom.BackgroundColor3 = Color3.new(0, 1, 1)	-- голубой
 			if not AutoFlags.MushroomsBottonDown then
 				buttonAutoMushrooms.BackgroundColor3 = Color3.new(0, 1, 1) end
 		elseif detectMaxClassMushroom_ == 5 then
-			seeMushroomButton.BackgroundColor3 = Color3.new(0.5, 0, 1)	-- фиолетовый
+			buttonSeeMushroom.BackgroundColor3 = Color3.new(0.5, 0, 1)	-- фиолетовый
 			if not AutoFlags.MushroomsBottonDown then
 				buttonAutoMushrooms.BackgroundColor3 = Color3.new(0.5, 0, 1) end
 		end
 		if detectMaxLvlMushroom_ > 0 then
-			seeMushroomButton.Text = tostring(detectMaxLvlMushroom_)
-			seeMushroomButton.Visible = true
+			buttonSeeMushroom.Text = tostring(detectMaxLvlMushroom_)
+			buttonSeeMushroom.Visible = true
 			buttonAutoMushrooms.Text = "AMush "..tostring(detectMaxLvlMushroom_)
 		else
-			seeMushroomButton.Text = "0"
-			seeMushroomButton.Visible = false
+			buttonSeeMushroom.Text = "0"
+			buttonSeeMushroom.Visible = false
 			buttonAutoMushrooms.Text = "AMush"
 		end
 		end
@@ -1194,7 +1200,7 @@ local function farmKillFunction()
 	end
 	HumanoidAction.Pause = true
 	local positionMushroom_ = Vector3.new(999, 999, 999)
-	while AutoFlags.MushroomsBottonDown and seeMushroomButton.Visible do
+	while AutoFlags.MushroomsBottonDown and buttonSeeMushroom.Visible do
 		local mushroom_ = MushroomSearch()
 		timeLutCollection = 3 + ActionFlags.MushroomLvl / 3 + ActionFlags.MushroomClass * 2
 		if mushroom_ == nil then break end
@@ -1435,7 +1441,7 @@ local function farmKillFunction()
 		wait(.1)---------------StickBug
 		if AutoFlags.StickBugBottonDown then AutoKillStickBug() end
 		wait(.1)---------------Mushrooms
-		if AutoFlags.MushroomsBottonDown and seeMushroomButton.Visible then
+		if AutoFlags.MushroomsBottonDown and buttonSeeMushroom.Visible then
 			AutoFarmMushrooms()
 		end
 		wait(.1)---------------Ticket
@@ -1670,7 +1676,7 @@ spawn(function()------------------main_Frame-------------------
 	local buttonHomePoint = CreateButton({Size=UDim2.new(0, 25, 0, 24),Position=UDim2.new(0, 190, 0, 34),
 		Text="(0)",Name="buttonHomePoint",Parent=main_Frame,TextSize = 14})
 
-------------------Закрытие xxxl_GUI------------------
+------------------Закрытие KonOvalGUI------------------
 	buttonDestroy.MouseButton1Down:Connect(function()
 		AutoFlags.DigBottonDown = false
 		AutoFlags.ViciousBottonDown = false
@@ -1696,7 +1702,7 @@ spawn(function()------------------main_Frame-------------------
 		HumanoidAction.AllStarting = false
 		wait(1)
 		HumanoidAction.AllStarting = nil
-		XXXLGui:Destroy()
+		K_o_n_O_v_a_l_Gui:Destroy()
 		wait(1)
 		ConnectionKey.VirtualUserActive:CaptureController()
 		return
@@ -1720,7 +1726,7 @@ spawn(function()------------------main_Frame-------------------
 		end
 	end)
 	
-	seeMushroomButton.MouseButton1Down:Connect(function() GoToMushroom() end)
+	buttonSeeMushroom.MouseButton1Down:Connect(function() GoToMushroom() end)
 	buttonMenu.MouseButton1Down:Connect(function() hideMenu() end)
 	buttonTP.MouseButton1Down:Connect(function() goToField() end)
 	
@@ -2187,7 +2193,10 @@ spawn(function()------------------settings_Frame---------------
 	local buttonDemonMaskEquip = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="Demon Mask",Name="buttonDemonMaskEquip",Parent=settings_Frame,TextSize = 10,--TextColor3=GuiColor.Text_Red_,
 		BackgroundColor3=GuiColor.Red_})
-
+	ButtonState.Forms(ButtonSet,10,3,3)
+	local buttonHoneyMaskEquip = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+		Text="Honey Mask",Name="buttonHoneyMaskEquip",Parent=settings_Frame,TextSize = 10,BackgroundColor3=GuiColor.On_Color_Y})
+	
 	buttonAutoDig.MouseButton1Down:Connect(function()--
 		if AutoFlags.DigBottonDown == false then
 			AutoFlags.DigBottonDown = true
@@ -2561,6 +2570,7 @@ spawn(function()------------------settings_Frame---------------
 	buttonDiamondMaskEquip.MouseButton1Down:Connect(function() switchMask("Blue") end)
 	buttonGummyMaskEquip.MouseButton1Down:Connect(function() switchMask("White") end)
 	buttonDemonMaskEquip.MouseButton1Down:Connect(function() switchMask("Red") end)
+	buttonHoneyMaskEquip.MouseButton1Down:Connect(function() switchMask("Honey") end)
 
 	buttonBalloonAndStart.MouseButton1Down:Connect(function()
 		if ButtonState.OnOff(buttonBalloonAndStart) then
