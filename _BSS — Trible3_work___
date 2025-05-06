@@ -3,8 +3,8 @@
 --mrsh wnd vcs
 
 local timeAfte_ = .1
-local timtDiging_ = 1--.3
-local timtSpeeding_ = .3--.3
+local timtDiging_ = .27--.3
+local timtSpeeding_ = .35--.3
 local GuiColor = {--(0.184314,0.105882,0.4431373)V3
 	Base_	= Color3.new(0.331765,0.158823,0.662060),
 	Red_	= Color3.new(1,0.6,0.6),
