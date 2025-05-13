@@ -888,11 +888,15 @@ ButtonState.Forms(ButtonSet,1,1,1)
 local farm30Button = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 	Text="Farm 30",Name="farm30Button",Parent=farmFrame})
 local farm30Flag = false
+ButtonState.Forms(ButtonSet,2,1,1)
+local farmButton = createButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
+	Text="Farm",Name="farmButton",Parent=farmFrame})
+local farmFlag = false
 
-local function clickEvent(button)
+local function clickFarm30(button)
 	farm30Flag = ButtonState.OnOff(button)
 	if not farm30Flag then return end
-
+	
 	local delta = 30
 	local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
 	local position = Vector3.new(humanoidRootPart.Position.x,humanoidRootPart.Position.y,
@@ -905,14 +909,91 @@ local function clickEvent(button)
 		humanoid.WalkSpeed = 60
 		humanoid:MoveTo(Vector3.new(x,y,z),nil)
 		wait(0.5)
+		game:GetService("ReplicatedStorage").Events.ToolCollect:FireServer()
 	until not farm30Flag
 
 	ButtonState.Activation(button)
 end
 
-farm30Button.MouseButton1Up:Connect(function()
-	clickEvent(farm30Button)end)
+local function clickFarm(button)
+	local function goToSpawn()
+		humanoidRootPart.CFrame = game.Players.LocalPlayer.SpawnPos.Value
+		wait(1)
+		game:GetService("ReplicatedStorage").Events.PlayerHiveCommand:FireServer("ToggleHoneyMaking")
+	end
 	
+	local function onSpawn()
+		local spawnPosHumanoid = game.Players.LocalPlayer.SpawnPos.Value
+		local x = humanoidRootPart.Position.x
+		local z = humanoidRootPart.Position.z
+		local delta = 5
+		if (x > spawnPosHumanoid.x - delta) and (x < spawnPosHumanoid.x + delta) and
+			(z > spawnPosHumanoid.z - delta) and (z < spawnPosHumanoid.z + delta) then
+			return true
+		end
+		return false
+	end
+
+	local function backpackCheckingUnloading(position)
+		if game.Players.LocalPlayer.CoreStats.Capacity.Value <=
+			game.Players.LocalPlayer.CoreStats.Pollen.Value then
+			wait(.5)
+			goToSpawn()
+			wait(4)
+			repeat
+				wait(1)
+			until game.Players.LocalPlayer.CoreStats.Pollen.Value == 0
+			wait(4)
+			
+			humanoidRootPart.CFrame = CFrame.new(position.x, position.y + 1, position.z)
+			wait(.2)
+			local A_1 = {["Name"] = "Sprinkler Builder"}
+			game:GetService("ReplicatedStorage").Events.PlayerActivesCommand:FireServer(A_1)
+			wait(.2)
+		end
+	end
+	
+	local function imKilled(position)
+		humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
+		if onSpawn() then
+			print("I'm killed!")
+			wait(30)
+			
+			humanoidRootPart.CFrame = CFrame.new(position.x, position.y + 1, position.z)
+			wait(.2)
+			local A_1 = {["Name"] = "Sprinkler Builder"}
+			game:GetService("ReplicatedStorage").Events.PlayerActivesCommand:FireServer(A_1)
+			wait(.2)
+		end	
+	end
+
+	farmFlag = ButtonState.OnOff(button)
+	if not farmFlag then return end
+	
+	local delta = 30
+	local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
+	local position = Vector3.new(humanoidRootPart.Position.x,humanoidRootPart.Position.y,
+		humanoidRootPart.Position.z)
+	local x,y,z
+	repeat
+		backpackCheckingUnloading(position)
+		x = position.x + math.random(-delta, delta)
+		y = humanoidRootPart.Position.y
+		z = position.z + math.random(-delta, delta)
+		humanoid.WalkSpeed = 60
+		humanoid:MoveTo(Vector3.new(x,y,z),nil)
+		wait(0.5)
+		game:GetService("ReplicatedStorage").Events.ToolCollect:FireServer()
+		imKilled(position)
+	until not farmFlag
+
+	ButtonState.Activation(button)
+end
+
+farm30Button.MouseButton1Up:Connect(function()
+	clickFarm30(farm30Button)end)
+farmButton.MouseButton1Up:Connect(function()
+	clickFarm(farmButton)end)
 end)
 
 spawn(function()-----timeFrame-----
