@@ -1,7 +1,4 @@
---BSS — Trible3_work___
---frm mnd mrsh crsms wnd vcs mbs ld tkt
---mrsh wnd vcs
-
+--BSS — Trible3_work+__
 local timeAfte_ = .1
 local timtDiging_ = .82--.3
 local timtSpeeding_ = .35--.3
@@ -159,9 +156,9 @@ createGui = function()-----createGui-----
 	local buttonMenu = CreateButton({Size=UDim2.new(0, 30, 0, 24),Position=UDim2.new(0, 5, 0, 34),
 		Text=">>",Name="buttonMenu",Parent=main_Frame,TextSize = 14})
 	local buttonFarm = CreateButton({Size=UDim2.new(0, 34, 0, 24),Position=UDim2.new(0, 85, 0, 34),
-		Text="Start",Name="buttonFarm",Parent=main_Frame})
+		Text="StartR",Name="buttonFarm",Parent=main_Frame,TextSize = 8})
 	local buttonFarmToSp = CreateButton({Size=UDim2.new(0, 34, 0, 24),Position=UDim2.new(0, 121, 0, 34),
-		Text="Start",Name="buttonFarmToSp",Parent=main_Frame,TextSize = 6})
+		Text="StartB",Name="buttonFarmToSp",Parent=main_Frame,TextSize = 8})
 	
 ------------------settings_Frame------------------
 	ButtonState.Forms(ButtonSet,1,1,1)
@@ -210,7 +207,6 @@ local buttonAutoVicious = settings_Frame:WaitForChild("buttonAutoVicious")
 local buttonAutoWindy = settings_Frame:WaitForChild("buttonAutoWindy")
 local buttonAutoStickBug = settings_Frame:WaitForChild("buttonAutoStickBug")
 
---K_o_n_O_v_a_l_Gui.Parent = game.Players.LocalPlayer.PlayerGui
 K_o_n_O_v_a_l_Gui.Parent = game.CoreGui
 
 local ConnectionKey = {ConnectionT,ConnectionCV,ConnectionRX,VirtualUserActive}
@@ -385,7 +381,7 @@ end
 local function checkBalloon()
 local capasityBalloonText_ = ""
 for _,v in pairs(game.workspace.Balloons.HiveBalloons:GetChildren()) do
-	if string.find(v.Name,"HiveBalloonInstance") then			-- ищем HiveBalloonInstance
+	if string.find(v.Name,"HiveBalloonInstance") then
 		for _,k in pairs(v:GetChildren()) do
 			if k.Name == "BalloonBody" then
 				local distance_ = k.Position.x - spawnPosHumanoid.x
@@ -432,22 +428,18 @@ end
 
 local function MoveToPoint(targetPoint)
 	local targetReached = false	
-	-- слушайте, как гуманоид достигает своей цели
 	local connection_
 	connection_ = humanoid.MoveToFinished:Connect(function(reached)
 		targetReached = true
 		connection_:Disconnect()
 		connection_ = nil
 	end)
-	-- начать идти
+	
 	humanoid:MoveTo(targetPoint)
 	while not targetReached do
 		if not AutoFlags.MobsBottonDown then break end
-		-- гуманоид все еще существует?
 		if not (humanoid and humanoid.Parent) then break end
-		-- цель изменилась?
 		if humanoid.WalkToPoint ~= targetPoint then	break end
-		-- обновить таймаут
 		humanoid:MoveTo(targetPoint)
 		wait(1)
 	end
@@ -479,7 +471,6 @@ local function moveToToken(targetPoint)
 	humanoid:MoveTo(targetPoint)
 	while not targetReached do
 		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
-		--if not (humanoid and humanoid.Parent) then break end
 		if humanoid.WalkToPoint ~= targetPoint then	break end
 		humanoid:MoveTo(targetPoint)
 		wait(.01)
@@ -565,7 +556,6 @@ goToFieldAndSplinker()
 end
 
 local function BackpackUnloadingMushroom(positionMushroom_)
-	-- проверяем заполнение рюкзака
 	if game.Players.LocalPlayer.CoreStats.Capacity.Value <=	game.Players.LocalPlayer.CoreStats.Pollen.Value then
 		if not AutoFlags.MushroomsBottonDown then return end
 		HumanoidAction.CapacityUnloading = true
@@ -796,19 +786,8 @@ local WRP = {---+++
 	end,
 	
 	autoDiging = function()--coroutine.wrap(WRP.autoDiging)()
-		--[[local function detectTool()
-			for _,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
-				if v:IsA("Tool") then
-					return v
-				end
-			end
-			return false
-		end
-
-		local tool = detectTool()]]
 		while AutoFlags.DigBottonDown do--and tool do  
 			game:GetService("ReplicatedStorage").Events.ToolCollect:FireServer()
-			--tool.ClickEvent:FireServer()
 			wait(timtDiging_)
 		end
 	end}
@@ -816,10 +795,10 @@ local WRP = {---+++
 local function MushroomSearch()
 if ActionFlags.MushroomLvl > 0 then
 	for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
-		if string.find(v.Name,"PuffballMushroom") then			-- ищем грибы
+		if string.find(v.Name,"PuffballMushroom") then
 			local descendants_ = v:GetDescendants()
 			for _, descendant in pairs(descendants_) do
-				if descendant.Name == "TextLabel" then			-- ищем уровень гриба
+				if descendant.Name == "TextLabel" then
 					if (ActionFlags.MushroomClass == 1) or
 						(ActionFlags.MushroomClass == 2 and string.find(descendant.Text, "Rare")) or
 						(ActionFlags.MushroomClass == 3 and string.find(descendant.Text, "Epic")) or
@@ -911,10 +890,10 @@ local Auto = {
 		local detectLvlMushroom_ = 0
 		local detectMaxLvlMushroom_ = 0
 		for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
-			if string.find(v.Name,"PuffballMushroom") then				-- ищем грибы
+			if string.find(v.Name,"PuffballMushroom") then
 				local descendants_ = v:GetDescendants()
 				for _, descendant in pairs(descendants_) do
-					if descendant.Name == "TextLabel" then				-- ищем уровень гриба
+					if descendant.Name == "TextLabel" then
 						if string.find(descendant.Text, "Rare") then
 							detectClassMushroom_ = 2
 						elseif string.find(descendant.Text, "Epic") then
@@ -939,7 +918,7 @@ local Auto = {
 								SearchMushroomMaxCFrame(v)
 							end
 						end
-						ActionFlags.MushroomClass = detectMaxClassMushroom_ --
+						ActionFlags.MushroomClass = detectMaxClassMushroom_ 
 						ActionFlags.MushroomLvl = detectMaxLvlMushroom_
 					end
 				end
@@ -1128,9 +1107,8 @@ local function farmKillFunction()
 		local positionPoint_ = position
 		wait(.2)
 		for count = 1, 1000 do
-			for _,v in pairs(workspace.Collectibles:GetChildren()) do	-- перебираем собираемые элементы
-			if (v.Position - positionPoint_).magnitude <= 40 then		-- если растояние меньше, собираем
-																		-- токен находится на уровне
+			for _,v in pairs(workspace.Collectibles:GetChildren()) do
+			if (v.Position - positionPoint_).magnitude <= 40 then
 			if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
 			if AutoFlags.MushroomsBottonDown then
 				if lutCollection then
@@ -1171,9 +1149,9 @@ local function farmKillFunction()
 	local function SearchWahhh()
 		if ActionFlags.MushroomLvl > 0 then
 			for _,v in pairs(game.workspace.Happenings.Puffshrooms:GetChildren()) do
-				if string.find(v.Name,"PuffballMushroom") then			-- ищем грибы
+				if string.find(v.Name,"PuffballMushroom") then
 					for _, descendant in pairs(v:GetDescendants()) do
-						if descendant.Name == "TextLabel" then			-- ищем уровень гриба
+						if descendant.Name == "TextLabel" then
 						if string.find(descendant.Text, "     Wahhh") then
 							if (ActionFlags.MushroomClass == 1) or
 								(ActionFlags.MushroomClass == 2 and string.find(descendant.Text, "Rare")) or
@@ -1212,7 +1190,6 @@ local function farmKillFunction()
 					positionMushroom_ = descendant.Position
 					humanoidRootPart.CFrame = descendant.CFrame
 					splinkerInstalling()
-					--print("switchMask_positionMushroom_",tostring(positionMushroom_))
 					switchMask(positionMushroom_)
 				else
 					positionMushroom_ = descendant.Position
@@ -1294,14 +1271,12 @@ local function farmKillFunction()
 			wait(.1)
 			for _,v in pairs(game.workspace.NPCBees:GetChildren()) do
 				if string.find(v.Name,"Windy") then
-					--game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame * CFrame.new(0,5,0)
 					humanoidRootPart.CFrame = v.CFrame * CFrame.new(0,5,0)
 				end
 			end
 			wait(.3)
 			for _,r in pairs(game.workspace.Monsters:GetChildren()) do
 			if string.find(r.Name,"Windy") then
-				--game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame =
 				humanoidRootPart.CFrame = r.HumanoidRootPart.CFrame * CFrame.new(0,30,0)
 				while true do
 					local human = r:FindFirstChildOfClass("Humanoid")
@@ -1340,19 +1315,6 @@ local function farmKillFunction()
 			goToFieldOrSpawn()
 			HumanoidAction.Pause = false
 		end
-		--[[for _,v in pairs(workspace.Collectibles:GetChildren()) do			-- перебираем собираемые элементы
-			if (v.Position - humanoidRootPart.Position).magnitude <= 30 then	-- если растояние меньше, собираем
-																				-- токен находится на уровне
-				if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
-					if AutoFlags.MobsBottonDown then
-						humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
-						wait(.2)
-					else
-						break
-					end
-				end
-			end
-		end]]
 	end
 
 	local function AutoKillStickBug()
@@ -1499,33 +1461,8 @@ local function onField(x,y,z)
 	return false
 end
 
---[[local function UpdateChecking()
-if tmpField_ ~= textView.Text then
-	humanoidRootPart = workspace:WaitForChild(game.Players.LocalPlayer.Name).HumanoidRootPart
-	humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-	fieldCFrame = CFrame.new(workspace.FlowerZones[textView.Text].Position)	-- поле CFrame
-	fieldPosition = workspace.FlowerZones[textView.Text].Position			-- поле Position
-	sizeField = workspace.FlowerZones[textView.Text].Size					-- размер поля
-	BordersField.min_X = fieldPosition.x - (sizeField.x / 2) + BordersField.distanceToBoard
-	BordersField.max_X = fieldPosition.x + (sizeField.x / 2) - BordersField.distanceToBoard
-	BordersField.min_Z = fieldPosition.z - (sizeField.z / 2) + BordersField.distanceToBoard
-	BordersField.max_Z = fieldPosition.z + (sizeField.z / 2) - BordersField.distanceToBoard
-	tmpField_ = textView.Text
-end
-end]]
-
---[[local checkingAndMove = function(object)
-	if onField(object.Position.x,object.Position.y,object.Position.z) then
-		if not HumanoidAction.Farm or HumanoidAction.Pause then return false end	
-		moveToToken(Vector3.new(object.Position.x, humanoidRootPart.Position.y, object.Position.z))
-		backpackBalloonCheckingUnloading()		
-	end
-	return true
-end]]
-
-local function farmFieldToToken()
+local function farmFieldToTokenR()
 	if not checkingStopping() then goToFieldAndSplinker() end
-	--local tmpField_ = ""
 	coroutine.wrap(imOnField)()
 	repeat
 		while checkingStopping() do
@@ -1535,9 +1472,9 @@ local function farmFieldToToken()
 		-------
 		humanoid:MoveTo(Vector3.new(fieldPosition.x, humanoidRootPart.Position.y, fieldPosition.z), nil)	-- идём в центр
 		wait(.01)
+		backpackBalloonCheckingUnloading()	
 		-----------------------------------------Token-----------------------------------------
 		for _,v in pairs(workspace.Collectibles:GetChildren()) do
-			--if not checkingAndMove(v) then break end
 			if onField(v.Position.x,v.Position.y,v.Position.z) then
 				if not HumanoidAction.Farm or HumanoidAction.Pause then break end	
 				moveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
@@ -1563,75 +1500,53 @@ local function farmFieldToToken()
 			end
 		end		
 	until not HumanoidAction.Farm
-	--tmpField_ = ""
 end
 
-local function goToSpace()
-if not HumanoidAction.Pause then goToField() end
-wait(.5)
-local tmpField_ = ""
-coroutine.wrap(imOnField)()
-repeat
-	while HumanoidAction.Pause or HumanoidAction.CapacityUnloading do
-		wait(1)
-		if not HumanoidAction.Farm then return end
-	end
-	--UpdateChecking()
-	-----------------------------------------
-	humanoid:MoveTo(Vector3.new(fieldPosition.x, humanoidRootPart.Position.y, fieldPosition.z), nil)	-- идём в центр
-	wait(.01)
-		--for reiterate = 1, 2 do
-	-----------------------------------------Token-----------------------------------------
-	for i = 1, 2 do
-	for k,v in pairs(workspace.Collectibles:GetChildren()) do		-- перебираем собираемые элементы
-	if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
-	if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then			-- токен находится на уровне
-		if not HumanoidAction.Farm or HumanoidAction.Pause then break end	
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)	-- собираем
-		wait(.25)--.25
-		backpackBalloonCheckingUnloading()		
-	end
-	end
-	end
-	end
-	-----------------------------------------Bubble-----------------------------------------
-	--[[for i = 1, 1 do
-	for k,v in pairs(workspace.Particles:GetChildren()) do		-- перебираем собираемые элементы
-	if string.find(v.Name,"Bubble") then
-	if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
-	if ((v.Position.y > fieldPosition.y - 5) and (v.Position.y < fieldPosition.y + 5)) then		-- токен находится на уровне
-		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)	-- собираем
-		wait(.2)--.2
-		backpackBalloonCheckingUnloading()
-	end
-	end
-	end
-	end
-	end]]
-	-----------------------------------------Flame-----------------------------------------
-	for i = 1, 1 do
-	for k,v in pairs(workspace.PlayerFlames:GetChildren()) do		-- перебираем собираемые элементы
-	if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
-	if ((v.Position.y > fieldPosition.y - 5) and (v.Position.y < fieldPosition.y + 5)) then		-- токен находится на уровне
-		if not HumanoidAction.Farm or HumanoidAction.Pause then break end
-		humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)	-- собираем
-		wait(.2)--.2
-		backpackBalloonCheckingUnloading()
-	end
-	end
-	end
-	end
-		--if not HumanoidAction.Farm or HumanoidAction.Pause then break end
-		--end
-until HumanoidAction.Farm == false
-tmpField_ = ""
+local function farmFieldToTokenB()
+	if not checkingStopping() then goToFieldAndSplinker() end
+	coroutine.wrap(imOnField)()
+	repeat
+		while checkingStopping() do
+			wait(1)
+			if not HumanoidAction.Farm then return end
+		end
+		-------
+		humanoid:MoveTo(Vector3.new(fieldPosition.x, humanoidRootPart.Position.y, fieldPosition.z), nil)	-- идём в центр
+		wait(.01)
+		backpackBalloonCheckingUnloading()	
+		-----------------------------------------Token-----------------------------------------
+		for _,v in pairs(workspace.Collectibles:GetChildren()) do
+			if onField(v.Position.x,v.Position.y,v.Position.z) then
+				if not HumanoidAction.Farm or HumanoidAction.Pause then break end	
+				moveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
+				backpackBalloonCheckingUnloading()		
+			end
+		end
+		-----------------------------------------Bubble-----------------------------------------
+		for _,v in pairs(workspace.Particles:GetChildren()) do
+			if string.find(v.Name,"Bubble") then
+				if onField(v.Position.x,v.Position.y,v.Position.z) then
+					if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+					moveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
+					backpackBalloonCheckingUnloading()	
+				end
+			end
+		end
+		-----------------------------------------Flame-----------------------------------------
+		--[[for _,v in pairs(workspace.PlayerFlames:GetChildren()) do
+			if onField(v.Position.x,v.Position.y,v.Position.z) then
+				if not HumanoidAction.Farm or HumanoidAction.Pause then break end
+				moveToToken(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z))
+				backpackBalloonCheckingUnloading()	
+			end
+		end]]
+	until not HumanoidAction.Farm
 end
 
 	if HumanoidAction.FarmToSp then
-		coroutine.wrap(goToSpace)()
+		coroutine.wrap(farmFieldToTokenB)()
 	else
-		coroutine.wrap(farmFieldToToken)()
+		coroutine.wrap(farmFieldToTokenR)()
 	end
 end
 
@@ -1671,8 +1586,6 @@ spawn(function()------------------main_Frame-------------------
 		Text="X",Name="buttonDestroy",Parent=main_Frame,TextSize=18,BackgroundColor3=GuiColor.Red_})
 	local buttonTP = CreateButton({Size=UDim2.new(0, 43, 0, 24),Position=UDim2.new(0, 40, 0, 34),
 		Text="Seg",Name="buttonTP",Parent=main_Frame,TextSize = 14})
-	--[[local buttonDisableFolding = CreateButton({Size=UDim2.new(0, 10, 0, 24),Position=UDim2.new(0, 85, 0, 34),
-		Text="",Name="buttonDisableFolding",Parent=main_Frame})]]
 	local buttonHomePoint = CreateButton({Size=UDim2.new(0, 25, 0, 24),Position=UDim2.new(0, 190, 0, 34),
 		Text="(0)",Name="buttonHomePoint",Parent=main_Frame,TextSize = 14})
 
@@ -1730,16 +1643,6 @@ spawn(function()------------------main_Frame-------------------
 	buttonMenu.MouseButton1Down:Connect(function() hideMenu() end)
 	buttonTP.MouseButton1Down:Connect(function() goToField() end)
 	
-	--[[buttonDisableFolding.MouseButton1Down:Connect(function()
-		if not AutoFlags.DisableFolding then
-			buttonDisableFolding.BackgroundColor3 = GuiColor.On_Color_B
-			AutoFlags.DisableFolding = true
-		else
-			buttonDisableFolding.BackgroundColor3 = GuiColor.Base_
-			AutoFlags.DisableFolding = false
-		end
-	end)]]
-
 	buttonFarm.MouseButton1Down:Connect(function()
 		if not HumanoidAction.FarmToSp then
 			if HumanoidAction.Farm then
@@ -1954,9 +1857,6 @@ spawn(function()------------------actions_Frame----------------
 	ButtonState.Forms(ButtonSet,4,2,2)
 	local buttonCDestroy = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
 		Text="CDestroy",Name="buttonCDestroy",Parent=actions_Frame})
-	ButtonState.Forms(ButtonSet,5,2,3)
-	local buttonSkan = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
-		Text="Skan",Name="buttonSkan",Parent=actions_Frame})
 		
 	ButtonState.Forms(ButtonSet,1,3,1)
 	local buttonQuest = CreateButton({Size=ButtonState.Size(ButtonSet),Position=ButtonState.Position(ButtonSet),
@@ -2019,10 +1919,6 @@ spawn(function()------------------actions_Frame----------------
 			v:Destroy()
 		end
 		ButtonState.Off(buttonFieldDeccosDel)
-		--BasePart MeshPart UnionOperation
-		--Model ManualWeld Weld
-		--Decorations
-		--Territories
 	end
 end)
 
@@ -2050,85 +1946,7 @@ end)
 		game:GetService("ReplicatedStorage").Events.ItemPackageEvent:InvokeServer("Equip", {
 			["Mute"] = true,["Type"] = "Petal Wand",["Category"] = "Collector"})
 	end)
-	
-	-- перебор компонентов Collectibles
-	--[[local function testAutoDiging()
-		local function detectTool()
-			for _,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
-				if v:IsA("Tool") then
-					return v
-				end
-			end
-			return false
-		end
 
-		local tool = detectTool()
-		while AutoFlags.DigBottonDown and tool do  
-			tool.ClickEvent:FireServer()
-			wait(timtDiging_)
-		end
-	end]]
-
-	-- перебор компонентов Collectibles
-	local function textureCollectiblesFunction()
-		local tmpText = ""
-		for _,v in pairs(workspace.Collectibles:GetChildren()) do
-			for index, descendant in pairs(v:GetDescendants()) do
-				if descendant.Name == "FrontDecal" then
-					tmpText = tmpText..tostring(descendant.Texture)
-				end
-			end
-		end
-		textKey.Text = tmpText
-	end
-
-	-- перебор компонентов Particles
-	--[[local TextureParticlesFunction = coroutine.wrap(function()
-	local tmpText = ""
-	for _,v in pairs(workspace.Particles:GetChildren()) do
-		for index, descendant in pairs(v:GetDescendants()) do
-			if descendant.Name == "FrontDecal" then
-				tmpText = tmpText..tostring(descendant.Texture)
-			end
-		end
-	end
-	textKey.Text = tmpText
-	end)]]
-	
-	-- перебор компонентов workspace Поиск мёда 
-	--[[local TextureFindHoneyFunction = coroutine.wrap(function()
-	textKey.Text = ""
-		for _, descendant in pairs(game.workspace:GetDescendants()) do
-			--if not descendant:IsA("BasePart") then
-			--if descendant.Name == "FrontDecal" then
-			if descendant.Parent.Name == "Gumball Machine" then
-			else
-				--if descendant.Texture == "rbxassetid://2028574353" then
-				if string.find(descendant.Texture, "rbxassetid") then
-					textKey.Text = textKey.Text..tostring(descendant.Parent.Parent.Parent.Name).."."
-					textKey.Text = textKey.Text..tostring(descendant.Parent.Parent.Name).."."
-					textKey.Text = textKey.Text..tostring(descendant.Parent.Name).."."
-					textKey.Text = textKey.Text..tostring(descendant.Name).."."
-					textKey.Text = textKey.Text..tostring(descendant.Texture)..":::::"
-				end
-			end
-			--end
-			--end
-		end
-	end)]]
-	
-	local function toggleTextureCollectibles(input, gameProcessed)
-		if HumanoidAction.AllStarting and input.KeyCode == Enum.KeyCode.Y then
-			coroutine.wrap(textureCollectiblesFunction)()
-		end
-	end
-	ConnectionKey.ConnectionT = game:GetService("UserInputService").InputEnded:Connect(toggleTextureCollectibles)
-	
-	buttonSkan.MouseButton1Down:Connect(function()
-		coroutine.wrap(textureCollectiblesFunction)()
-		--TextureParticlesFunction()
-		--TextureFindHoneyFunction()
-	end)
 end)
 
 spawn(function()------------------settings_Frame---------------
@@ -2475,7 +2293,7 @@ spawn(function()------------------settings_Frame---------------
 		end
 	end)
 
-	buttonAutoBasicEgg.MouseButton1Down:Connect(function()--
+	buttonAutoBasicEgg.MouseButton1Down:Connect(function()
 		local function usingPrinter()
 			local eggType = "Basic Egg"
 			while AutoFlags.BasicEggBottonDown do
@@ -2495,7 +2313,7 @@ spawn(function()------------------settings_Frame---------------
 		end
 	end)
 
-	buttonAutoVicious.MouseButton1Down:Connect(function()--
+	buttonAutoVicious.MouseButton1Down:Connect(function()
 		if not AutoFlags.ViciousBottonDown then
 			AutoFlags.ViciousBottonDown = true
 			ButtonState.On(buttonAutoVicious)
@@ -2505,7 +2323,7 @@ spawn(function()------------------settings_Frame---------------
 		end
 	end)
 
-	buttonAutoWindy.MouseButton1Down:Connect(function()--
+	buttonAutoWindy.MouseButton1Down:Connect(function()
 		if not AutoFlags.WindyBottonDown then
 			AutoFlags.WindyBottonDown = true
 			ButtonState.On(buttonAutoWindy)
@@ -2515,7 +2333,7 @@ spawn(function()------------------settings_Frame---------------
 		end
 	end)
 
-	buttonAutoStickBug.MouseButton1Down:Connect(function()--
+	buttonAutoStickBug.MouseButton1Down:Connect(function()
 		if not AutoFlags.StickBugBottonDown then
 			AutoFlags.StickBugBottonDown = true
 			ButtonState.On(buttonAutoStickBug)
@@ -2525,7 +2343,7 @@ spawn(function()------------------settings_Frame---------------
 		end
 	end)
 
-	buttonAutoTornado.MouseButton1Down:Connect(function()--
+	buttonAutoTornado.MouseButton1Down:Connect(function()
 		local function controlTornado()
 			local tweenservice_ = game:GetService("TweenService")
 			local info_ = TweenInfo.new(0.2) --(in seconds)
@@ -2538,9 +2356,9 @@ spawn(function()------------------settings_Frame---------------
 					if tornado_.Name == "Root" or tornado_.Name == "Plane" then
 						if BordersField.min_X < tornado_.Position.x and tornado_.Position.x < BordersField.max_X
 							and BordersField.min_Z < tornado_.Position.z and tornado_.Position.z < BordersField.max_Z then
-							for _,v in pairs(workspace.Collectibles:GetChildren()) do		-- перебираем собираемые элементы
+							for _,v in pairs(workspace.Collectibles:GetChildren()) do
 								if (v.Position.x > BordersField.min_X) and (v.Position.x < BordersField.max_X) and (v.Position.z > BordersField.min_Z) and (v.Position.z < BordersField.max_Z) then
-									if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then	-- токен находится на уровне
+									if ((v.Position.y > fieldPosition.y - 3) and (v.Position.y < fieldPosition.y + 5)) then
 										if not AutoFlags.TornadoBottonDown then return end
 										item_.CFrame = CFrame.new(v.Position.x, tornado_.Position.y, v.Position.z)
 										local Tween = tweenservice_:Create(tornado_, info_, item_)
@@ -2595,7 +2413,7 @@ spawn(function()------------------settings_Frame---------------
 		end
 	end)
 
-	buttonSnailTime.MouseButton1Down:Connect(function()--?
+	buttonSnailTime.MouseButton1Down:Connect(function()
 		local function snailTimeDecrease()
 			switchMask(3)
 			ButtonState.On(buttonDistance)
@@ -2639,7 +2457,7 @@ spawn(function()------------------settings_Frame---------------
 		end
 	end)
 
-	buttonAutoFind.MouseButton1Down:Connect(function()--
+	buttonAutoFind.MouseButton1Down:Connect(function()
 		if AutoFlags.TicketBottonDown == false then
 			AutoFlags.TicketBottonDown = true
 			ButtonState.On(buttonAutoFind)
@@ -2651,7 +2469,6 @@ spawn(function()------------------settings_Frame---------------
 
 	buttonFind.MouseButton1Down:Connect(function()
 		ButtonState.Off(buttonFind)
-		--humanoidRootPart.Anchored = true
 		print("ticketFunc")
 		local boolTicket_, cFrameTicket_ = SearchTicket()
 		if boolTicket_ then
@@ -2667,7 +2484,6 @@ spawn(function()------------------settings_Frame---------------
 					cFrameTicket_.Y, cFrameTicket_.Z)
 			end
 		end
-		--humanoidRootPart.Anchored = false
 		ButtonState.Activation(buttonFind)
 	end)
 
@@ -2678,13 +2494,12 @@ spawn(function()------------------settings_Frame---------------
 		HumanoidAction.CapacityUnloading = false
 	end)
 
-	buttonAutoChristmas.MouseButton1Down:Connect(function()--
+	buttonAutoChristmas.MouseButton1Down:Connect(function()
 		local function collectDist25()
 			local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
-			for k,v in pairs(workspace.Collectibles:GetChildren()) do			-- перебираем собираемые элементы
+			for k,v in pairs(workspace.Collectibles:GetChildren()) do
 				if tostring(v) == tostring(game.Players.LocalPlayer.Name) or tostring(v) == "C" then
-					if (v.Position - humanoidRootPart.Position).magnitude <= 25 then	-- если растояние меньше, собираем
-																						-- токен находится на уровне
+					if (v.Position - humanoidRootPart.Position).magnitude <= 25 then
 						if ((v.Position.y > humanoidRootPart.Position.y - 5) and (v.Position.y < humanoidRootPart.Position.y + 15)) then
 							if buttonAutoChristmas.Active then
 								humanoid:MoveTo(Vector3.new(v.Position.x, humanoidRootPart.Position.y, v.Position.z), nil)
@@ -2720,7 +2535,6 @@ spawn(function()------------------settings_Frame---------------
 				end
 				HumanoidAction.Pause = true
 				local toyEvent = game:GetService("ReplicatedStorage").Events.ToyEvent
-				--game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Gingerbread House")
 				if not step(7,CFrame.new(-403.2, 48, 280.2)) then break end					--"Wax"
 				toyEvent:FireServer("Honeyday Candles")
 				if not step(3,CFrame.new(233, 35.61, 239)) then break end					--"Stockings"
@@ -2787,19 +2601,3 @@ Waypoints = {
 		
 		switchMask("Red")
 		setSpeed()
-	--	AutoFlags.MushroomsBottonDown = true
-	--buttonAutoMushrooms.BackgroundColor3 = uiColor.On_Color_G
-			wait(1)
-	--	textView.Text = "Stump Field"
-	--textView.Text = "Pepper Patch"
-	--setBordersField(BordersField.distanceToBoard)
-
-	
-	
-	-- not
-	--game:GetService("ReplicatedStorage").Events.RoboBearReroll:FireServer()
-	--game:GetService("ReplicatedStorage").Events.RoboBearRoundEnd:FireServer()
-	--game:GetService("ReplicatedStorage").Events.RoboBearUpgradeSelect:FireServer("")
-	--game:GetService("ReplicatedStorage").Events.RoboBearQuestSelect:FireServer("")
-	--game:GetService("ReplicatedStorage").Events.StickerStackActivate:FireServer("Chef Hat Polar Bear Sticker")
-	--loadstring(game:HttpGet(('https://raw.githubusercontent.com/Status2024/LuaScripts/refs/heads/main/_BSS%20%E2%80%94%20Subsidiary.lua'),true))()
