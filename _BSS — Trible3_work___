@@ -1,4 +1,6 @@
 --BSS — Trible3_work+__
+
+
 local timeAfte_ = .1
 local timtDiging_ = .82--.3
 local timtSpeeding_ = .35--.3
@@ -209,7 +211,7 @@ local buttonAutoStickBug = settings_Frame:WaitForChild("buttonAutoStickBug")
 
 K_o_n_O_v_a_l_Gui.Parent = game.CoreGui
 
-local ConnectionKey = {ConnectionT,ConnectionCV,ConnectionRX,VirtualUserActive}
+local ConnectionKey = {ConnectionCV,ConnectionRX,VirtualUserActive}
 local HumanoidState = {Speed=0,TmpSpeed=0,SetMask=0}
 local HumanoidAction = {AllStarting=true,Farm=false,FarmToSp=false,Pause=false,CapacityUnloading=false}
 local AutoFlags = {
@@ -1608,7 +1610,6 @@ spawn(function()------------------main_Frame-------------------
 		BordersField.distanceToBoard = 5
 		HumanoidAction.Farm = false
 		HumanoidAction.Pause = false
-		ConnectionKey.ConnectionT:Disconnect()
 		ConnectionKey.ConnectionCV:Disconnect()
 		ConnectionKey.ConnectionTX:Disconnect()
 		ConnectionKey.VirtualUserActive:CaptureController()
@@ -2601,3 +2602,9 @@ Waypoints = {
 		
 		switchMask("Red")
 		setSpeed()
+	--	AutoFlags.MushroomsBottonDown = true
+	--buttonAutoMushrooms.BackgroundColor3 = uiColor.On_Color_G
+			wait(1)
+	--	textView.Text = "Stump Field"
+	--textView.Text = "Pepper Patch"
+	--setBordersField(BordersField.distanceToBoard)
