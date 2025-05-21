@@ -119,14 +119,16 @@ local ButtonState = {
 	end,
 	
 	LaunchPeriod = function (button, second)
-		for i = 1, math.floor(second) do
+		local step = 2--
+		for i = 1, math.floor(second / step) do
 			if not button.AutoButtonColor or allStop then
 				return false
 			end
-			wait(1)
+			wait(step)
 		end
 		return true
-	end}
+	end
+}
 
 local MenuButtonSet = {Row=1;Column=1;Segment=1;GapX=0;GapY=5;SizeX=30;SizeY=21}
 local ButtonSet = {Row=1;Column=1;Segment=1;GapX=0;GapY=4;SizeX=108;SizeY=21}
@@ -967,8 +969,24 @@ local function clickFarm(button)
 		end	
 	end
 
+	local function usingDispenser()
+		while farmFlag do
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Glue Dispenser")
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Wealth Clock")
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Strawberry Dispenser")
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Blueberry Dispenser")
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Treat Dispenser")
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Free Ant Pass Dispenser")
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Honey Dispenser")
+			game:GetService("ReplicatedStorage").Events.ToyEvent:FireServer("Free Royal Jelly Dispenser")
+			if not ButtonState.LaunchPeriod(button, 120) then break end
+		end
+	end
+	
+	
 	farmFlag = ButtonState.OnOff(button)
 	if not farmFlag then return end
+	coroutine.wrap(usingDispenser)()
 	
 	local delta = 30
 	local humanoid = game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid")
