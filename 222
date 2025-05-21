@@ -4,7 +4,7 @@
 		v:Destroy()
 	end
 end]]
---_BSS — Subsidiary2
+--_BSS — Subsidiary2 + dispenser + balloon
 
 local GuiColor = {
 	Base_	= Color3.new(0.184314,0.105882,0.4431373),
@@ -936,17 +936,63 @@ local function clickFarm(button)
 		return false
 	end
 
+	local function processSingleHiveBalloon(hiveBalloonInstance, humanoidPosX)
+		if not string.find(hiveBalloonInstance.Name, "HiveBalloonInstance") then
+			return nil
+		end
+	
+		local balloonBody = hiveBalloonInstance:FindFirstChild("BalloonBody")
+		if not balloonBody then
+			return nil
+		end
+	
+		if math.abs(balloonBody.Position.x - humanoidPosX) >= 10 then
+			return nil
+		end
+	
+		for _, descendant in pairs(balloonBody:GetDescendants()) do
+			if descendant.Name == "Bar" then
+				local textLabel = descendant:FindFirstChild("TextLabel")
+				if textLabel and textLabel:IsA("TextLabel") then
+					local capacityText = string.gsub(textLabel.Text, ",", "")
+					return tonumber(capacityText) or nil
+				end
+			end
+		end
+	
+		return nil
+	end
+	
+	local function checkBalloon()
+		local balloonsContainer = game.workspace.Balloons.HiveBalloons
+		local spawnPosHumanoid = game.Players.LocalPlayer.SpawnPos.Value
+		local humanoidPosX = spawnPosHumanoid.x
+	
+		for _, hiveBalloonInstance in pairs(balloonsContainer:GetChildren()) do
+			local capacity = processSingleHiveBalloon(hiveBalloonInstance, humanoidPosX)
+			if capacity then
+				return capacity
+			end
+		end
+		return nil
+	end
+
 	local function backpackCheckingUnloading(position)
 		if game.Players.LocalPlayer.CoreStats.Capacity.Value <=
 			game.Players.LocalPlayer.CoreStats.Pollen.Value then
 			wait(.5)
 			goToSpawn()
 			wait(4)
+			
 			repeat
 				wait(1)
 			until game.Players.LocalPlayer.CoreStats.Pollen.Value == 0
+
+			while checkBalloon() do
+				wait(2)
+			end
+
 			wait(4)
-			
 			humanoidRootPart.CFrame = CFrame.new(position.x, position.y + 1, position.z)
 			wait(.2)
 			local A_1 = {["Name"] = "Sprinkler Builder"}
