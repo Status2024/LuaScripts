@@ -1,5 +1,6 @@
+VirtualUserActive = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:connect(function()
-	ConnectionKey.VirtualUserActive:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+	VirtualUserActive:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 	wait(1)
-	ConnectionKey.VirtualUserActive:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+	VirtualUserActive:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 end)
