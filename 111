@@ -5,11 +5,13 @@ local localPlayer = game:GetService("Players").LocalPlayer
 local MIN_INTERVAL_SECONDS = 5 * 60  -- 5 минут
 local MAX_INTERVAL_SECONDS = 10 * 60 -- 10 минут
 
+local KEY_TO_PRESS = Enum.KeyCode.RightBracket
+
 local function simulateActivity()
     if VirtualUserActive and localPlayer then
-        VirtualUserActive:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-        wait(0.1)
-        VirtualUserActive:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        VirtualUserActive:SendKeyEvent(true, KEY_TO_PRESS, false)
+        wait(0.05)
+        VirtualUserActive:SendKeyEvent(false, KEY_TO_PRESS, false)
         return true
     end
     return false
