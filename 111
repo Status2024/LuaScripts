@@ -1,6 +1,32 @@
-VirtualUserActive = game:GetService("VirtualUser")
+
+local VirtualUserActive = game:GetService("VirtualUser")
+local localPlayer = game:GetService("Players").LocalPlayer
+
+local MIN_INTERVAL_SECONDS = 5 * 60  -- 5 минут
+local MAX_INTERVAL_SECONDS = 10 * 60 -- 10 минут
+
+local function simulateActivity()
+    if VirtualUserActive and localPlayer then
+        VirtualUserActive:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        wait(0.1)
+        VirtualUserActive:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        return true
+    end
+    return false
+end
+
+while true do
+    local randomInterval = math.random(MIN_INTERVAL_SECONDS, MAX_INTERVAL_SECONDS)
+    wait(randomInterval)
+    local success = simulateActivity()
+    if not success then
+        break
+    end
+end
+
+--[[VirtualUserActive = game:GetService("VirtualUser")
 game:GetService("Players").LocalPlayer.Idled:connect(function()
 	VirtualUserActive:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 	wait(1)
 	VirtualUserActive:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-end)
+end)]]
